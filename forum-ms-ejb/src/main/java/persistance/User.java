@@ -67,8 +67,9 @@ public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	
-	
+	@Column(unique = true,nullable = false)
 	private String email;
+	@Column(unique = true,nullable = false)
 	private String username;
 	private String password;
 	@Enumerated(EnumType.STRING)
@@ -78,12 +79,16 @@ public class User implements Serializable {
 	private String lastName;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date birthDate;
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date lastConnect;
 	// account creation date
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date creationDate;
 	private String image;
 	private String phoneNumber;
 	private UserGender gender;
+	private Boolean connected;
+	private String token;
 	
 	
 	public User() {
@@ -94,7 +99,7 @@ public class User implements Serializable {
 		this.username = username;
 		this.password = password;
 		this.role = UserRole.MEMBER;
-		this.isEnabled = Boolean.TRUE;
+		this.isEnabled = Boolean.FALSE;
 		this.creationDate = new Date();
 	}
  
@@ -260,6 +265,30 @@ public class User implements Serializable {
 	}
 	public void setGender(UserGender gender) {
 		this.gender = gender;
+	}
+
+	public Date getLastConnect() {
+		return lastConnect;
+	}
+
+	public void setLastConnect(Date lastConnect) {
+		this.lastConnect = lastConnect;
+	}
+
+	public Boolean getConnected() {
+		return connected;
+	}
+
+	public void setConnected(Boolean connected) {
+		this.connected = connected;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
    
 }

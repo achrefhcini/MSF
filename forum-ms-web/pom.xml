@@ -34,7 +34,7 @@
 				<version>9.0.0.Alpha1</version>
 				<type>pom</type>
 			</dependency>
-			
+			<!-- for objectMapperContextResolver -->
 			<dependency>
     			<groupId>com.fasterxml.jackson.datatype</groupId>
     			<artifactId>jackson-datatype-jsr310</artifactId>

@@ -28,7 +28,7 @@ public class Client {
 	@Consumes(MediaType.TEXT_PLAIN)
 	public Response getUserById(@PathParam("id") int id)
 	{
-		User user=userManager.GetUserById(id);
+		User user=userManager.getUserById(id);
 		if(user!=null)
 		{
 			System.err.println(user.getCreationDate());
@@ -37,7 +37,14 @@ public class Client {
 			
 		return Response.status(Status.NO_CONTENT).build();
 	}
-	
+	@Path("/enable/{username}/{token}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	public Response enable(@PathParam("username") String username,@PathParam("token") String token)
+	{
+		return Response.ok(userManager.enableUser(username, token)).build();
+	}
 	@Path("/addUser")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -48,9 +55,21 @@ public class Client {
 			@QueryParam("password") String password
 			)
 	{
+		
 		User user = new User(email,username,password);
-		return Response.ok(userManager.AddUser(user)).build();
+		
+		return Response.ok(userManager.quickSignup(user)).build();
 	}
-	
+	@Path("/login")
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes()
+	public Response login(
+			@QueryParam("usernameOrEmail") String username,
+			@QueryParam("password") String password
+			)
+	{		
+		return Response.ok(userManager.login(username, password)).build();
+	}
 	
 }
