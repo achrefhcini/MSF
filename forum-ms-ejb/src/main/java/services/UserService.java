@@ -20,6 +20,7 @@ public class UserService implements IUserManagerLocal
 		try
 		{
 			entityManaer.persist(user);
+			entityManaer.flush();
 			return true;
 		}
 		catch(Exception e)

@@ -7,6 +7,8 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 
 /**
  * Entity implementation class for Entity: User
@@ -18,7 +20,7 @@ public class User implements Serializable {
 
 	   
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer idMember;
 	
 	@ManyToMany(fetch = FetchType.EAGER,mappedBy="groupMembres")
@@ -33,6 +35,7 @@ public class User implements Serializable {
 	private Set<Section> sectionsAsCreator;
 	
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
+	@JsonBackReference
 	private Set<Topic> topicsAsCreator;
 	
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
@@ -61,7 +64,8 @@ public class User implements Serializable {
 	private Set<Event> myEvents;
 	
 	
-	@OneToMany(fetch = FetchType.EAGER,mappedBy="reactedUser")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy="reactedUser")
+	@JsonBackReference
 	private Set<RateTopic> myReactions;
 	
 	private static final long serialVersionUID = 1L;

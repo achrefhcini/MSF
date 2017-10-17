@@ -6,6 +6,8 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 /**
  * Entity implementation class for Entity: Topic
  *
@@ -16,32 +18,64 @@ public class Topic implements Serializable {
 
 	   
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer idTopic;
 	
-	@ManyToOne
+    private String Titre_topic;
+    private String Description;
+	
+    @ManyToOne
 	@JoinColumn(name="parentSubSection",referencedColumnName="idSubSection")
 	private SubSection parentSubSection;
 	
 	@ManyToOne
 	@JoinColumn(name="creator",referencedColumnName="idMember")
+	@JsonManagedReference
 	private User creator;
 	
 	
-	@OneToMany(fetch = FetchType.EAGER,mappedBy="topic")
+    @OneToMany(fetch = FetchType.EAGER,mappedBy="topic")
+    @JsonManagedReference
 	private Set<RateTopic> reactions;
 	
 	private static final long serialVersionUID = 1L;
 
+	public Topic(String titre_topic, String description) {
+		super();
+		Titre_topic = titre_topic;
+		Description = description;
+	}
 	public Topic() {
 		super();
-	}   
+	} 
+	
 	public Integer getIdTopic() {
 		return this.idTopic;
 	}
 
 	public void setIdTopic(Integer idTopic) {
 		this.idTopic = idTopic;
+	}
+	public String getTitre_topic() {
+		return Titre_topic;
+	}
+
+	public void setTitre_topic(String titre_topic) {
+		Titre_topic = titre_topic;
+	}
+
+	public String getDescription() {
+		return Description;
+	}
+
+	public void setDescription(String description) {
+		Description = description;
+	}
+	public Topic(String titre_topic, String description, User creator) {
+		super();
+		Titre_topic = titre_topic;
+		Description = description;
+		this.creator = creator;
 	}
 	public SubSection getParentSubSection() {
 		return parentSubSection;
