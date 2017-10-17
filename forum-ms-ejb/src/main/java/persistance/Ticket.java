@@ -14,7 +14,7 @@ public class Ticket implements Serializable {
 
 	   
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer idTicket;
 	
 	@OneToOne
@@ -25,6 +25,7 @@ public class Ticket implements Serializable {
 	@JoinColumn(name="event",referencedColumnName="idEvent")
 	private Event event;
 	
+	private String CodeTicket;
 	private static final long serialVersionUID = 1L;
 
 	public Ticket() {
@@ -48,6 +49,12 @@ public class Ticket implements Serializable {
 	}
 	public void setEvent(Event event) {
 		this.event = event;
+	}
+	public String getCodeTicket() {
+		return CodeTicket;
+	}
+	public void setCodeTicket(String codeTicket) {
+		CodeTicket = codeTicket;
 	}
    
 }

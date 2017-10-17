@@ -7,6 +7,8 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import jdk.nashorn.internal.ir.annotations.Ignore;
+
 
 /**
  * Entity implementation class for Entity: User
@@ -14,6 +16,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="fms_member")
+
 public class User implements Serializable {
 
 	   
@@ -47,8 +50,8 @@ public class User implements Serializable {
 	@OneToOne(fetch = FetchType.EAGER,mappedBy="administrator")
 	private Section sectionAsAdministrator;
 	
-	@OneToOne(fetch = FetchType.EAGER,mappedBy="participant")
-	private Ticket ticket;
+	/*@OneToOne(fetch = FetchType.EAGER,mappedBy="participant")
+	private Ticket ticket;*/
 	
 	@OneToOne(fetch = FetchType.EAGER,mappedBy="administrator")
 	private SubSection subSectionAsAdministrator;
@@ -57,8 +60,8 @@ public class User implements Serializable {
 	private Set<ActivityHistory> myHistories;
 	
 	
-	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
-	private Set<Event> myEvents;
+	/*@OneToMany(fetch = FetchType.LAZY,mappedBy="creator")
+	private Set<Event> myEvents;*/
 	
 	
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="reactedUser")
@@ -159,12 +162,12 @@ public class User implements Serializable {
 	public void setSectionAsAdministrator(Section sectionAsAdministrator) {
 		this.sectionAsAdministrator = sectionAsAdministrator;
 	}
-	public Ticket getTicket() {
+	/*public Ticket getTicket() {
 		return ticket;
 	}
 	public void setTicket(Ticket ticket) {
-		this.ticket = ticket;
-	}
+		this.ticket = ticket;*/
+	//}
 	public SubSection getSubSectionAsAdministrator() {
 		return subSectionAsAdministrator;
 	}
@@ -177,12 +180,12 @@ public class User implements Serializable {
 	public void setMyHistories(Set<ActivityHistory> myHistories) {
 		this.myHistories = myHistories;
 	}
-	public Set<Event> getMyEvents() {
+	/*public Set<Event> getMyEvents() {
 		return myEvents;
 	}
 	public void setMyEvents(Set<Event> myEvents) {
 		this.myEvents = myEvents;
-	}
+	}*/
 	public Set<RateTopic> getMyReactions() {
 		return myReactions;
 	}
@@ -260,6 +263,11 @@ public class User implements Serializable {
 	}
 	public void setGender(UserGender gender) {
 		this.gender = gender;
+	}
+
+	public User(Integer idMember) {
+		super();
+		this.idMember = idMember;
 	}
    
 }

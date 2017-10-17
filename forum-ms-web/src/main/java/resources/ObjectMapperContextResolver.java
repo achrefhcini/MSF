@@ -12,12 +12,13 @@ public class ObjectMapperContextResolver implements ContextResolver<ObjectMapper
 
     public ObjectMapperContextResolver() {
         MAPPER = new ObjectMapper();
-        MAPPER.registerModule(new JSR310Module());
+       MAPPER.registerModule(new JSR310Module());
         MAPPER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
     @Override
     public ObjectMapper getContext(Class<?> type) {
         return MAPPER;
-    }  
+      
 }
+    }

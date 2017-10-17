@@ -8,6 +8,7 @@ import iservices.IUserManagerLocal;
 import persistance.User;
 
 @Stateless
+
 public class UserService implements IUserManagerLocal
 {
 	@PersistenceContext(unitName="forumMS")
