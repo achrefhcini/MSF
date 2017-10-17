@@ -23,8 +23,9 @@ public class Topic implements Serializable {
 	
     private String Titre_topic;
     private String Description;
+    private float Moyenne;
 	
-    @ManyToOne
+	@ManyToOne
 	@JoinColumn(name="parentSubSection",referencedColumnName="idSubSection")
 	private SubSection parentSubSection;
 	
@@ -95,5 +96,10 @@ public class Topic implements Serializable {
 	public void setReactions(Set<RateTopic> reactions) {
 		this.reactions = reactions;
 	}
-   
+	 public float getMoyenne() {
+			return Moyenne;
+		}
+		public void setMoyenne(float moyenne) {
+			Moyenne = moyenne;
+		}
 }

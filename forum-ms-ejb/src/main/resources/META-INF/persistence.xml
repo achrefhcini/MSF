@@ -13,7 +13,7 @@
 		<class>persistance.Topic</class>
 		<class>persistance.User</class>
 		<properties>
-			<property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+			<property name="hibernate.hbm2ddl.auto" value="update"/>
 		</properties>
 	</persistence-unit>
 </persistence>

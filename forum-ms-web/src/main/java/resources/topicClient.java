@@ -46,6 +46,19 @@ public class topicClient {
 			
 		return Response.status(Status.NO_CONTENT).build();
 	}
+	
+	@Path("/getreactionTopics/{id}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@JsonIgnore
+	public Response getreationtopics(@PathParam("id") int id)
+	{
+		Set<RateTopic> topiclist = topicManager.GetTopicreactions(id);
+		return Response.ok(topiclist).build();
+	}
+	
+	
 	@Path("/getAllTopic")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -54,16 +67,33 @@ public class topicClient {
 	public Response getallTopic()
 	{
 		List<Topic> topiclist = topicManager.GetAllTopic();
-		/*for (Topic topic : topiclist) {
-			//Set<RateTopic> ratelist = topicManager.GetAllRateTopic(topic.getIdTopic());
-			Set<RateTopic> ratelist=topic.getReactions();
-			for (RateTopic rateTopic : ratelist) {
-				rateTopic.setTopic(null);
-			}
-		}*/
-		
 		return Response.ok(topiclist).build();
 	}
+	
+	
+	@Path("/getUserReactions/{id}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@JsonIgnore
+	public Response getuserreactions(@PathParam("id") int id)
+	{
+		Set<RateTopic> topiclist = topicManager.GetUserAllRateTopic(id);
+		return Response.ok(topiclist).build();
+	}
+	
+	
+	@Path("/getUserTopics/{id}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@JsonIgnore
+	public Response getusertopics(@PathParam("id") int id)
+	{
+		Set<Topic> topiclist = topicManager.GetUserAllTopic(id);
+		return Response.ok(topiclist).build();
+	}
+	
 	
 	@Path("/deleteTopic/{id}")
 	@POST
@@ -104,7 +134,21 @@ public class topicClient {
 			@QueryParam("idMember") int idMember
 			)
 	{
-		return Response.ok(topicManager.AddRateTopic(idTopic,rateValue,idMember)).build();
+		if(topicManager.UserRateExist(idMember, idTopic)==false)
+		{
+		boolean valid = topicManager.AddRateTopic(idTopic,rateValue,idMember);
+		Topic topic = topicManager.GetTopicById(idTopic);
+		topicManager.GenerateRate(topic);
+		return Response.ok(valid).build();
+		}
+		else
+		{
+			RateTopic rate = topicManager.GetRateTopicByUserTopic(idTopic,idMember);
+			boolean valid = topicManager.UpdateRateTopic(rate,rateValue);
+			Topic topic = topicManager.GetTopicById(idTopic);
+			topicManager.GenerateRate(topic);
+			return Response.ok(valid).build();
+		}
 	}
 	
 	
