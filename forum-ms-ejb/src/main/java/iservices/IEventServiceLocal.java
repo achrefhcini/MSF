@@ -35,4 +35,6 @@ public interface IEventServiceLocal {
 	List<Event>GetEventJoinedByGivenUser(int iduser);
 	
 	List<Event>ListOfEventThisWeek();
+
+	String GetEtatEvent(int idevent);
 }

@@ -1,10 +1,13 @@
 package services;
 
+import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import iservices.IUserManagerLocal;
+import persistance.Event;
 import persistance.User;
 
 @Stateless
@@ -29,5 +32,6 @@ public class UserService implements IUserManagerLocal
 		}
 		
 	}
+	
 	
 }

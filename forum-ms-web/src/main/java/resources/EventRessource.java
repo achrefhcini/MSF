@@ -180,4 +180,11 @@ public class EventRessource {
 		   {
 			   return Response.status(200).entity(eventManger.ListOfEventThisWeek()).build();
 		   }
+	       @Path("/GetEtatEvent/{idevent}") 
+		   @GET
+		   @Produces(MediaType.TEXT_HTML)	    
+		   public Response GetEtatEvent(@PathParam(value="idevent")Integer idevent)
+	       {
+	    	   return Response.status(200).entity(eventManger.GetEtatEvent(idevent)).build();
+	       }
 }

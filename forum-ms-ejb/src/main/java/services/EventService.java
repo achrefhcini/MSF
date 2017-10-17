@@ -1,6 +1,7 @@
 package services;
 
 import java.text.ParseException;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -9,8 +10,10 @@ import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import iservices.IEventServiceLocal;
+import iservices.IUserManagerLocal;
 import persistance.Event;
 import persistance.User;
+import util.Mail;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -25,13 +28,15 @@ public class EventService implements IEventServiceLocal {
 	@PersistenceContext(unitName="forumMS")
 	EntityManager entityManger;
 	
-	
 	@Override
 	public boolean AddEvent(Event event) {
 	try
-		{
+		{	
 			entityManger.persist(event);
 			entityManger.flush();
+			List<User>users=entityManger.createQuery("Select u From User u",User.class).getResultList();
+			//System.err.println(users.toString());
+			for(User i :users){Mail.generateAndSendEmail(i.getEmail());}
 			return true;
 		}
 		catch(Exception e)
@@ -170,6 +175,27 @@ public class EventService implements IEventServiceLocal {
 		List<Event> depts = entityManger.createQuery("Select a From Event a  WHERE (a.StartDate BETWEEN  :today1 and :today2) and (a.EndDate BETWEEN  :today1 and :today2) ",
 	    Event.class).setParameter("today1",Usedtoday).setParameter("today2",today2).getResultList();
 	    return depts;
+	}
+	@Override
+	public String GetEtatEvent(int idevent) {
+		Date today = null;
+		Calendar calendar = Calendar.getInstance();     
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		String sDate = dateFormat.format(calendar.getTime());
+		 try {
+	   today = dateFormat.parse(sDate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 List<Event> depts = entityManger.createQuery("Select a From Event a",Event.class).getResultList();
+		for(Event ev :depts)
+		{
+			if(ev.getStartDate().after(today))return "Not_Started_Yet";
+			else if(ev.getEndDate().before(today))return "finished";
+			else return "in_progress";
+		}
+		return "no";
 	}
 	}
 	
