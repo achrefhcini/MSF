@@ -12,18 +12,22 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
+import iservices.IDeviceServiceLocal;
 import iservices.IUserManagerLocal;
+import persistance.Device;
 import persistance.User;
 import utils.Mail;
 import utils.Utils;
 
 @Stateless
 public class UserService implements IUserManagerLocal
-{
+{	
 	@PersistenceContext(unitName="forumMS")
 	EntityManager entityManager;
 	@EJB
 	Mail mail;
+	@EJB
+	IDeviceServiceLocal deviceService;
 	public User getUserById(int id)
 	{
 		return entityManager.find(User.class, id);
@@ -45,7 +49,7 @@ public class UserService implements IUserManagerLocal
 		}
 		
 	}
-	public JsonObject quickSignup(User user) 
+	public JsonObject quickSignup(User user,Device device) 
 		{
 		JsonObjectBuilder errorBuilder=Json.createObjectBuilder();
 		if(Utils.emailValidator(user.getEmail()))
@@ -80,18 +84,26 @@ public class UserService implements IUserManagerLocal
 				
 			}
 			user.setToken(Utils.tokenGenerator());
+			
 			entityManager.persist(user);
 			entityManager.flush();
+			device.setOwner(user);
+			deviceService.addDevice(device);
 			JsonObjectBuilder succesBuilder=Json.createObjectBuilder();
 			succesBuilder.add("succes", "quick signup successfully completed");
 			succesBuilder.add("user_id",user.getId());
-			mail.send(user.getEmail(), "Quick singup", "your account has been successfully created please activate it now <br> " 
-			+"http://localhost:18080/forum-ms-web/v0/user/enable/"+user.getUsername()+"/"+user.getToken());
+			String path = "http://localhost:18080/forum-ms-web/v0/user/enable/"+user.getUsername()+"/"+user.getToken();
+			mail.send(
+					user.getEmail()
+					, "Quick singup"
+					, "your account has been successfully created please activate it now <br> http://localhost:18080/forum-ms-web/v0/user/enable/"+user.getUsername()+"/"+user.getToken()
+					,path
+					);
 			return succesBuilder.build();
 			
 		}
 	
-	public JsonObject login(String usernameOrEmail, String password)
+	public JsonObject login(String usernameOrEmail, String password,Device device)
 	{
 		try {
 			password=Utils.toMD5(password);
@@ -109,6 +121,10 @@ public class UserService implements IUserManagerLocal
 					user.setLastConnect(new Date());
 					entityManager.persist(user);
 					entityManager.flush();
+					device.setOwner(user);
+					device.setConnected(Boolean.TRUE);
+					device.setLastConnection(new Date());
+					deviceService.addDeviceOrSetconnected(device);
 					return Json.createObjectBuilder()
 							.add("succes", "you have been logged in successfully")
 							.add("user_id",user.getId())
@@ -137,6 +153,10 @@ public class UserService implements IUserManagerLocal
 					user.setLastConnect(new Date());
 					entityManager.persist(user);
 					entityManager.flush();
+					device.setOwner(user);
+					device.setConnected(Boolean.TRUE);
+					device.setLastConnection(new Date());
+					deviceService.addDeviceOrSetconnected(device);
 					return Json.createObjectBuilder()
 							.add("succes", "you have been logged in successfully")
 							.add("user_id",user.getId())
@@ -158,6 +178,205 @@ public class UserService implements IUserManagerLocal
 		}
 	}
 	
+	public JsonObject logout(int iduser,int idDevice) {
+		User user=getUserById(iduser);
+		if(user!=null)
+		{
+			Boolean isConn = isConnectedPrivate(iduser);
+			if(isConn==null)
+			{
+				return Json.createObjectBuilder().add("error", "you are not logged in yet").build();
+			}
+			else
+			{
+				if(isConnectedPrivate(iduser))
+				{
+					Device device =deviceService.getDeviceById(idDevice);
+					user=getUserById(iduser);
+					device.setConnected(Boolean.FALSE);
+					if(!haveConnectedDevice(user,device.getIdDevice()))
+					{
+						user.setConnected(Boolean.FALSE);
+					}
+					
+					entityManager.persist(user);
+					entityManager.flush();
+					return Json.createObjectBuilder().add("succes", "you have been successfully logged out")
+							.add("user_id",user.getId())
+							.build();
+				}
+				else
+				{
+					return Json.createObjectBuilder().add("error", "you are already logged out").build();
+				}	
+			}
+			
+		}
+		else
+			return Json.createObjectBuilder().add("error", "there are no user with ID: "+iduser).build();
+		
+	}
+
+	public JsonObject changePassword(int id, String currentPsd, String NewcurrentPsd) {
+		
+		User user=getUserById(id);
+		if(user!=null)
+		{
+			Boolean isConn = isConnectedPrivate(id);
+			if(isConn==null)
+			{
+				return Json.createObjectBuilder().add("error", "you are not logged in yet").build();
+			}
+			else if(!isConn)
+			{
+				return Json.createObjectBuilder().add("error", "you are not connected").build();
+			}
+			else if(!user.getIsEnabled())
+			{
+				return Json.createObjectBuilder().add("error", "your account is disabled").build();
+			}
+			else if(!isValidPassword(NewcurrentPsd))
+			{
+				return Json.createObjectBuilder().add("error", "the password is too weak").build();
+			}
+			else
+			{
+				String hashpass="";
+				try {
+					hashpass = Utils.toMD5(currentPsd);
+				} catch (NoSuchAlgorithmException e) {}
+				if(!user.getPassword().equals(hashpass))
+				{
+					return Json.createObjectBuilder().add("error", "your password is not correct").build();
+				}
+				else
+				{
+					try {
+						user.setPassword(Utils.toMD5(NewcurrentPsd));
+					} catch (NoSuchAlgorithmException e) {}
+					entityManager.persist(user);
+					entityManager.flush();
+					return Json.createObjectBuilder()
+							.add("succes", "your password has been changed")
+							.add("user_id",user.getId())
+							.build();
+				}
+			}	
+		}
+		else
+		{
+			return Json.createObjectBuilder().add("error", "there are no user with ID: "+id).build();	
+		}
+	}
+	public JsonObject chnageProfilPicture(int id, String path) {
+		User user=getUserById(id);
+		if(user!=null)
+		{
+			Boolean isConn = isConnectedPrivate(id);
+			if(isConn==null)
+			{
+				return Json.createObjectBuilder().add("error", "you are not logged in yet").build();
+			}
+			else if(!isConn)
+			{
+				return Json.createObjectBuilder().add("error", "you are not connected").build();
+			}
+			else if(!user.getIsEnabled())
+			{
+				return Json.createObjectBuilder().add("error", "your account is disabled").build();
+			}else
+			{
+				user.setImage(path);
+				entityManager.persist(user);
+				entityManager.flush();
+				return Json.createObjectBuilder()
+						.add("succes", "your profil picture has been changed")
+						.add("user_id",user.getId())
+						.build();
+			}
+		}else
+		{
+			return Json.createObjectBuilder().add("error", "there are no user with ID: "+id).build();	
+		}
+	}
+	public JsonObject isConnected(int id) {
+		User user=getUserById(id);
+		if(user!=null)
+		{
+			Boolean isConn = isConnectedPrivate(id);
+			if(isConn==null)
+			{
+				return Json.createObjectBuilder().add("error", "you are not logged in yet").build();
+			}
+			else if(isConn)
+			{
+				return Json.createObjectBuilder()
+						.add("succes", "you are connected")
+						.add("user_id",user.getId())
+						.build();
+			}else
+			{
+				return Json.createObjectBuilder()
+						.add("succes", "you are not connected")
+						.add("user_id",user.getId())
+						.build();
+			}
+		}else
+		{
+			return Json.createObjectBuilder().add("error", "there are no user with ID: "+id).build();	
+		}
+		
+	}
+	public JsonObject isConnected(String usernameOrEmail) {
+		User user = getUserByUsername(usernameOrEmail);
+		if(user!=null)
+		{
+			return isConnected(user.getId());
+		}
+		else
+		{
+			user = getUserByEmail(usernameOrEmail);
+			if(user!=null)
+			{
+				return isConnected(user.getId());
+			}
+			else
+			{
+				return Json.createObjectBuilder().add("error", "there are no user with username or email: "+usernameOrEmail).build();	
+			}
+		}
+	}
+	public JsonObject disableUser(int id) {
+		User user = getUserById(id);
+		if(user!=null)
+		{
+			 if(user.getIsEnabled())
+				{
+				 	user.setIsEnabled(Boolean.FALSE);
+				 	user.setConnected(Boolean.FALSE);
+					entityManager.persist(user);
+					entityManager.flush();
+					return Json.createObjectBuilder()
+							.add("succes", "you are account has been disabled")
+							.add("user_id",user.getId())
+							.build();
+				}else
+				{
+					return Json.createObjectBuilder().add("error", "your account is already disabled").build();
+				}
+		}else
+		{
+			return Json.createObjectBuilder().add("error", "there are no user with ID: "+id).build();	
+		}
+		
+	}
+	
+	public User getUserByUsername(String username) {
+		return this.getUserByUsernamePrivate(username);
+	}
+	public User getUserByEmail(String email) {
+		return this.getUserByEmailPrivate(email);
+	}
 	
 	
 	
@@ -165,6 +384,34 @@ public class UserService implements IUserManagerLocal
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private boolean haveConnectedDevice(User u,int idDevice)
+	{
+		long result=(long) entityManager.createQuery(
+				  "SELECT count(d) from Device d WHERE d.owner = :owner"
+				  + " and d.connected = :connected and d.idDevice <> :idDevice")
+				  .setParameter("owner", u)
+				  .setParameter("connected", Boolean.TRUE)
+				  .setParameter("idDevice", idDevice)
+				  .getSingleResult();
+		
+		if(result==0)
+			return false;			
+		else
+			return true;
+	}
 	
 	private User loginEmail(String email, String password)
 	{
@@ -174,6 +421,36 @@ public class UserService implements IUserManagerLocal
 					  "SELECT u from User u WHERE u.email = :email and u.password = :password")
 						.setParameter("email", email)
 						.setParameter("password", password)
+						.getSingleResult();
+				return result;	
+		}
+		catch(NoResultException e)
+		{
+			return null;
+		}
+	}
+	private User getUserByUsernamePrivate(String username)
+	{
+		try
+		{
+			User result=(User) entityManager.createQuery(
+					  "SELECT u from User u WHERE u.username = :username")
+						.setParameter("username", username)
+						.getSingleResult();
+				return result;	
+		}
+		catch(NoResultException e)
+		{
+			return null;
+		}
+	}
+	private User getUserByEmailPrivate(String email)
+	{
+		try
+		{
+			User result=(User) entityManager.createQuery(
+					  "SELECT u from User u WHERE u.email = :email")
+						.setParameter("email", email)
 						.getSingleResult();
 				return result;	
 		}
@@ -221,6 +498,14 @@ public class UserService implements IUserManagerLocal
 		else
 			return true;
 	}
+	private Boolean isConnectedPrivate(int id)
+	{
+		Boolean result=(Boolean) entityManager.createQuery(
+				  "SELECT u.connected from User u WHERE u.idMember = :id").
+				  setParameter("id", id).getSingleResult();
+			return result;			
+	
+	}
 	private boolean isValidPassword(String password)
 	{
 		if(password.length()<5)
@@ -247,6 +532,11 @@ public class UserService implements IUserManagerLocal
 
 
 	}
+
+
+	
+	
+
 	
 		
 	}

@@ -28,6 +28,8 @@ public class User implements Serializable {
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Group> groupsAsCreator;
 	
+	@OneToMany(fetch = FetchType.EAGER,mappedBy="owner")
+	private Set<Device> Devices;
 	
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Section> sectionsAsCreator;
@@ -289,6 +291,14 @@ public class User implements Serializable {
 
 	public void setToken(String token) {
 		this.token = token;
+	}
+
+	public Set<Device> getDevices() {
+		return Devices;
+	}
+
+	public void setDevices(Set<Device> devices) {
+		Devices = devices;
 	}
    
 }

@@ -1,5 +1,6 @@
 package utils;
 
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -44,6 +45,41 @@ public class Utils {
 
 		return generatedPassword;
 	}
-	
-	
+	public static String getValidationEmail(String path)  
+	{
+		String email = "<!doctype html>"+
+"<html lang='en'>"+
+"<head>"+
+    "<meta charset='UTF-8'>"+
+    "<meta name='viewport'"+
+          "content='width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0'>"+
+    "<meta http-equiv='X-UA-Compatible' content='ie=edge'>"+
+    "<title>Document</title>"+
+    "<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' integrity='sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u' crossorigin='anonymous'>"+
+    "<style>"+
+        ".qlt-confirmation {"+
+           " width: 30%;"+
+           " margin: 10px auto;"+
+        "}"+
+
+   " </style>"+
+"</head>"+
+"<body>"+
+"<div class='qlt-confirmation'>"+
+    "<div class='panel panel-default'>"+
+        "<div class='panel-body'>"+
+            "<center>"+
+                "<img src='https://cdn4.iconfinder.com/data/icons/social-communication/142/open_mail_letter-512.png' style='width:30px; height: 30px;'>"+
+                "<p class='desc'>Thank you for signing up!<br>This is a confirmation link.<br><a href='"+path+"' class='btn btn-info' role='button'>VERIFY YOUR ACCOUNT</a></p>"+
+            "</center>"+
+
+            "<p class='notice'>Note:<br>Using our <b>social login</b>, you will be ask to add your email address during authentication. This is part of our security policy.</p>"+
+        "</div>"+
+    "</div>"+
+"</div>"+
+"</body>"+
+"</html>";
+   		return email;
+	}
+
 }
