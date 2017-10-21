@@ -106,6 +106,7 @@ public class UserService implements IUserManagerLocal
 	public JsonObject login(String usernameOrEmail, String password,Device device)
 	{
 		try {
+			
 			password=Utils.toMD5(password);
 		} catch (NoSuchAlgorithmException e) {
 			return Json.createObjectBuilder().add("error", "your password is not correct").build();
@@ -127,13 +128,12 @@ public class UserService implements IUserManagerLocal
 					deviceService.addDeviceOrSetconnected(device);
 					return Json.createObjectBuilder()
 							.add("succes", "you have been logged in successfully")
-							.add("user_id",user.getId())
-							.build();
+							.add("user_id",user.getId()).build();
+							
 				}else
 				{
 					return Json.createObjectBuilder()
-							.add("error", "your account is disabled")
-							.build();
+							.add("error", "your account is disabled").build();
 				}
 				
 
@@ -159,14 +159,12 @@ public class UserService implements IUserManagerLocal
 					deviceService.addDeviceOrSetconnected(device);
 					return Json.createObjectBuilder()
 							.add("succes", "you have been logged in successfully")
-							.add("user_id",user.getId())
-							.build();
+							.add("user_id",user.getId()).build();
 					
 				}else
 				{
 					return Json.createObjectBuilder()
-							.add("error", "your account is disabled")
-							.build();
+							.add("error", "your account is disabled").build();
 				}
 			
 			}

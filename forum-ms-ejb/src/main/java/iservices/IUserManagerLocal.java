@@ -2,7 +2,6 @@ package iservices;
 
 import javax.ejb.Local;
 import javax.json.JsonObject;
-
 import persistance.Device;
 import persistance.User;
 

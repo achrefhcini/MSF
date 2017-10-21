@@ -5,10 +5,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
+
 public class Utils {
+
 	public static boolean emailValidator(String email) {
 		boolean isValid = false;
 		try {
@@ -45,6 +48,7 @@ public class Utils {
 
 		return generatedPassword;
 	}
+
 	public static String getValidationEmail(String path)  
 	{
 		String email = "<!doctype html>"+

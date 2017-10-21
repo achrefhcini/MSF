@@ -3,20 +3,26 @@ package services;
 
 import java.util.Date;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 import iservices.IDeviceServiceLocal;
 import persistance.Device;
+import utils.Mail;
+
 
 @Stateless
 public class DeviceService implements IDeviceServiceLocal {
 
 	@PersistenceContext(unitName="forumMS")
 	EntityManager entityManager;
+	@EJB
+	Mail mail;
 	
 	public Device getDeviceById(int id) {
 		return entityManager.find(Device.class, id);
@@ -43,7 +49,18 @@ public class DeviceService implements IDeviceServiceLocal {
 	public JsonObject addDeviceOrSetconnected(Device device) {
 		Device device2=findDeviceByOsAndBrowserDevice(device);
 		
-		if(device2!=null)
+		if(device2==null)
+		{
+			System.out.println("i'm heeeree help1");
+			mail.send(device.getOwner().getEmail(),"new device detected ",device.getOs()+" "+device.getBrowser()+" "+device.getIp(), "");
+			System.out.println("i'm heeeree help2");
+			entityManager.persist(device);
+			return Json
+					.createObjectBuilder()
+					.add("succes", "the device has been successfully added ")
+					.build();
+		}
+		else
 		{
 			device2.setConnected(true);
 			device2.setLastConnection(new Date());
@@ -51,14 +68,6 @@ public class DeviceService implements IDeviceServiceLocal {
 			return Json
 					.createObjectBuilder()
 					.add("error", "the device is allready exist")
-					.build();
-		}
-		else
-		{
-			entityManager.persist(device);
-			return Json
-					.createObjectBuilder()
-					.add("succes", "the device has been successfully added ")
 					.build();
 		}
 	}
@@ -88,14 +97,20 @@ public class DeviceService implements IDeviceServiceLocal {
 	}
 	private Device findDeviceByOsAndBrowserDevice(Device device)
 	{
-		Device result=(Device) entityManager.createQuery(
+		
+		try{
+
+
+			return (Device) entityManager.createQuery(
 				  	"SELECT d from Device d WHERE d.owner = :owner and d.os = :os and d.browser = :browser")
 					.setParameter("owner", device.getOwner())
 					.setParameter("os", device.getOs())
 					.setParameter("browser", device.getBrowser())
 					.getSingleResult();
-		
-			return result;
+		}
+			catch (NoResultException nre){
+				return null;
+			}
 	}
 
 

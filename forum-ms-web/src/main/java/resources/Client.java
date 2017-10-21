@@ -8,9 +8,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -105,7 +110,7 @@ public class Client {
 			@QueryParam("password") String password
 			)
 	{
-		
+		GenerateToken generateToken = new GenerateToken();
 		String tab[]=getOsBrowserUser(req.getHeader("User-Agent"));
 		String remoteHost = req.getRemoteHost();
 		Device device = new Device();
@@ -113,13 +118,23 @@ public class Client {
 		device.setBrowser(tab[1]);
 		device.setConnected(Boolean.FALSE);
 		device.setIp(remoteHost);
-		return Response.ok(userManager.login(username, password,device)).build();
+		JsonObject jsonObject =userManager.login(username, password,device);
+		
+		if(jsonObject.containsKey("error"))
+		{
+			return Response.ok(jsonObject).build();
+		}
+		else
+		{
+			jsonObject=jsonObjectToBuilder(jsonObject).add("token", generateToken.issueToken(username)).build();
+			return Response.ok(jsonObject).build();
+		}
+		
 	}
 	@Path("/ip")
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response getIp(@Context HttpServletRequest req) {
-	    //String remoteHost = req.getRemoteHost();
 	    String tab[]=getOsBrowserUser(req.getHeader("User-Agent"));
 	    return Response.ok("OS: "+tab[0]+" Bowser: "+tab[1]).build();
 	}
@@ -147,7 +162,6 @@ public class Client {
 		try {
 			id = input.getFormDataPart("id", Integer.class, null);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
@@ -282,7 +296,18 @@ public class Client {
 	        }
 	        String[] tabs = {os,browser};
 	        return tabs;
-	       
-		
+	       	
+	}
+	private JsonObjectBuilder jsonObjectToBuilder(JsonObject jo) {
+	    JsonObjectBuilder job = Json.createObjectBuilder();
+
+	    for (Entry<String, JsonValue> entry : jo.entrySet()) {
+	    	if(entry!=null&&entry.getKey()!=null&&entry.getValue()!=null)
+	    	{
+	    		job.add(entry.getKey(), entry.getValue());
+	    	}
+	    }
+
+	    return job;
 	}
 }
