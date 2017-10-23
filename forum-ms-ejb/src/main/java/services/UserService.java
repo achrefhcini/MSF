@@ -2,6 +2,7 @@ package services;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -11,11 +12,13 @@ import javax.json.JsonObjectBuilder;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import iservices.IDeviceServiceLocal;
 import iservices.IUserManagerLocal;
 import persistance.Device;
 import persistance.User;
+import persistance.UserGender;
 import utils.Mail;
 import utils.Utils;
 
@@ -375,6 +378,234 @@ public class UserService implements IUserManagerLocal
 	public User getUserByEmail(String email) {
 		return this.getUserByEmailPrivate(email);
 	}
+	public List<User> getAllUser() {
+		
+		try
+		{
+			
+			TypedQuery<User> query =
+			entityManager.createQuery
+			("SELECT u from User u", User.class);
+			List<User> results = query.getResultList();
+			return results;	
+		}
+		catch(NoResultException e)
+		{
+			return null;
+		}
+	}
+	public List<User> getEnabledUsers() {
+		try
+		{
+			
+			TypedQuery<User> query =
+			entityManager.createQuery
+			("SELECT u from User u where u.isEnabled=true", User.class);
+			List<User> results = query.getResultList();
+			return results;	
+		}
+		catch(NoResultException e)
+		{
+			return null;
+		}
+	}
+	public List<User> getDisableUsers() {
+		try
+		{
+			
+			TypedQuery<User> query =
+			entityManager.createQuery
+			("SELECT u from User u where u.isEnabled=false", User.class);
+			List<User> results = query.getResultList();
+			return results;	
+		}
+		catch(NoResultException e)
+		{
+			return null;
+		}
+	}
+	public JsonObject updateFirstname(int idUser, String firstname) {
+		User user = getUserById(idUser);
+		if(user!=null)
+		{
+			 if(user.getIsEnabled())
+				{
+				 	user.setFirstName(firstname);
+					entityManager.persist(user);
+					entityManager.flush();
+					return Json.createObjectBuilder()
+							.add("succes", "the username has been update successfully")
+							.add("user_id",user.getId())
+							.build();
+				}else
+				{
+					return Json.createObjectBuilder().add("error", "your account is disabled").build();
+				}
+		}else
+		{
+			return Json.createObjectBuilder().add("error", "there are no user with ID: "+idUser).build();	
+		}
+		
+	}
+	public JsonObject updateLastname(int idUser, String lastname) {
+		User user = getUserById(idUser);
+		if(user!=null)
+		{
+			 if(user.getIsEnabled())
+				{
+				 	user.setLastName(lastname);
+					entityManager.persist(user);
+					entityManager.flush();
+					return Json.createObjectBuilder()
+							.add("succes", "the lastname has been update successfully")
+							.add("user_id",user.getId())
+							.build();
+				}else
+				{
+					return Json.createObjectBuilder().add("error", "your account is disabled").build();
+				}
+		}else
+		{
+			return Json.createObjectBuilder().add("error", "there are no user with ID: "+idUser).build();	
+		}
+	}
+	public JsonObject updateBirthDate(int idUser, Date BirthDate) {
+		User user = getUserById(idUser);
+		if(user!=null)
+		{
+			 if(user.getIsEnabled())
+				{
+				 	user.setBirthDate(BirthDate);
+					entityManager.persist(user);
+					entityManager.flush();
+					return Json.createObjectBuilder()
+							.add("succes", "the birth date has been update successfully")
+							.add("user_id",user.getId())
+							.build();
+				}else
+				{
+					return Json.createObjectBuilder().add("error", "your account is disabled").build();
+				}
+		}else
+		{
+			return Json.createObjectBuilder().add("error", "there are no user with ID: "+idUser).build();	
+		}
+	}
+	public JsonObject updatePhoneNumber(int idUser, String phoneNumber) {
+		User user = getUserById(idUser);
+		if(user!=null)
+		{
+			 if(user.getIsEnabled())
+				{
+				 	user.setPhoneNumber(phoneNumber);
+					entityManager.persist(user);
+					entityManager.flush();
+					return Json.createObjectBuilder()
+							.add("succes", "the phone number has been update successfully")
+							.add("user_id",user.getId())
+							.build();
+				}else
+				{
+					return Json.createObjectBuilder().add("error", "your account is disabled").build();
+				}
+		}else
+		{
+			return Json.createObjectBuilder().add("error", "there are no user with ID: "+idUser).build();	
+		}
+	}
+	public JsonObject updateGender(int idUser, UserGender gender) {
+		User user = getUserById(idUser);
+		if(user!=null)
+		{
+			 if(user.getIsEnabled())
+				{
+				 	user.setGender(gender);
+					entityManager.persist(user);
+					entityManager.flush();
+					return Json.createObjectBuilder()
+							.add("succes", "the gender has been update successfully")
+							.add("user_id",user.getId())
+							.build();
+				}else
+				{
+					return Json.createObjectBuilder().add("error", "your account is disabled").build();
+				}
+		}else
+		{
+			return Json.createObjectBuilder().add("error", "there are no user with ID: "+idUser).build();	
+		}
+	}
+	public List<User> getUsersAbleModerator() {
+		try
+		{
+			
+			TypedQuery<User> query =
+			entityManager.createQuery
+			("SELECT u from User u where u.points>5000", User.class);
+			List<User> results = query.getResultList();
+			return results;	
+		}
+		catch(NoResultException e)
+		{
+			return null;
+		}
+	}
+	public List<User> getUsersAbleSectionAdministrator() {
+		try
+		{
+			
+			TypedQuery<User> query =
+			entityManager.createQuery
+			("SELECT u from User u where u.points>7000", User.class);
+			List<User> results = query.getResultList();
+			return results;	
+		}
+		catch(NoResultException e)
+		{
+			return null;
+		}
+	}
+	public List<User> getUsersAbleSubSectionAdministrator() {
+		try
+		{
+			
+			TypedQuery<User> query =
+			entityManager.createQuery
+			("SELECT u from User u where u.points>10000", User.class);
+			List<User> results = query.getResultList();
+			return results;	
+		}
+		catch(NoResultException e)
+		{
+			return null;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -530,6 +761,10 @@ public class UserService implements IUserManagerLocal
 
 
 	}
+
+
+
+
 
 
 	
