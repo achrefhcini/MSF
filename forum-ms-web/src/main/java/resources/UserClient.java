@@ -45,7 +45,7 @@ public class UserClient {
 	@Inject
 	IUserManagerLocal userManager ;
 	private final String UPLOADED_FILE_PATH = "E:\\test\\";
-	
+	//******************************************************
 	@Path("/getUserById/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -55,25 +55,47 @@ public class UserClient {
 		User user=userManager.getUserById(id);
 		if(user!=null)
 		{
-			System.err.println(user.getCreationDate());
 			return Response.ok(user).build();
 		}
 			
 		return Response.status(Status.NO_CONTENT).build();
 	}
-	@Path("/enable/{username}/{token}")
+	//******************************************************
+	@Path("/getUserByUsername/{username}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.TEXT_PLAIN)
-	public Response enable(@PathParam("username") String username,@PathParam("token") String token)
+	public Response getUserByUsername(@PathParam("username") String username)
 	{
-		return Response.ok(userManager.enableUser(username, token)).build();
+		User user=userManager.getUserByUsername(username);
+		if(user!=null)
+		{
+			return Response.ok(user).build();
+		}
+			
+		return Response.status(Status.NO_CONTENT).build();
 	}
+	//******************************************************
+	@Path("/getUserByUsername/{email}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	public Response getUserByEmail(@PathParam("email") String email)
+	{
+		User user=userManager.getUserByEmail(email);
+		if(user!=null)
+		{
+			return Response.ok(user).build();
+		}
+			
+		return Response.status(Status.NO_CONTENT).build();
+	}
+	//******************************************************
 	@Path("/addUser")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes()
-	public Response addUser(
+	public Response quickSignup(
 			@Context HttpServletRequest req,
 			@QueryParam("email") String email,
 			@QueryParam("username") String username,
@@ -87,19 +109,7 @@ public class UserClient {
 		Device device = new Device(user,tab[0],tab[1],remoteHost,Boolean.FALSE);
 		return Response.ok(userManager.quickSignup(user,device)).build();
 	}
-	@Path("/changePassword")
-	@PUT
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes()
-	public Response changePassword(
-			@QueryParam("id") int id,
-			@QueryParam("currentPwd") String currentPwd,
-			@QueryParam("newPwd") String newPwd
-			)
-	{
-		
-		return Response.ok(userManager.changePassword(id, currentPwd, newPwd)).build();
-	}
+	//******************************************************
 	@Path("/login")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -131,14 +141,7 @@ public class UserClient {
 		}
 		
 	}
-	@Path("/ip")
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	public Response getIp(@Context HttpServletRequest req) {
-	    String tab[]=getOsBrowserUser(req.getHeader("User-Agent"));
-	    return Response.ok("OS: "+tab[0]+" Bowser: "+tab[1]).build();
-	}
-
+	//******************************************************
 	@Path("/logout/{idUser}/{idDevice}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -148,6 +151,40 @@ public class UserClient {
 			) {
 	    return Response.ok(userManager.logout(idUser,idDevice)).build();
 	}
+	//******************************************************
+	
+	@Path("/enable/{username}/{token}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	public Response enable(@PathParam("username") String username,@PathParam("token") String token)
+	{
+		return Response.ok(userManager.enableUser(username, token)).build();
+	}
+	
+	@Path("/changePassword")
+	@PUT
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes()
+	public Response changePassword(
+			@QueryParam("id") int id,
+			@QueryParam("currentPwd") String currentPwd,
+			@QueryParam("newPwd") String newPwd
+			)
+	{
+		
+		return Response.ok(userManager.changePassword(id, currentPwd, newPwd)).build();
+	}
+	
+	@Path("/ip")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response getIp(@Context HttpServletRequest req) {
+	    String tab[]=getOsBrowserUser(req.getHeader("User-Agent"));
+	    return Response.ok("OS: "+tab[0]+" Bowser: "+tab[1]).build();
+	}
+
+	
 	
 	@POST
 	@Path("/changePicture")
