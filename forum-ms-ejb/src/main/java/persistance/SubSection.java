@@ -6,12 +6,18 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 /**
  * Entity implementation class for Entity: SubSection
  *
  */
 @Entity
 @Table(name="fms_sub_section")
+@JsonIdentityInfo(
+		  generator = ObjectIdGenerators.PropertyGenerator.class, 
+		  property = "id")
 public class SubSection implements Serializable {
 
 	   

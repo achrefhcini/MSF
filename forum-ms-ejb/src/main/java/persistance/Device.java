@@ -6,6 +6,10 @@ import java.util.Date;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 
 /**
  * Entity implementation class for Entity: User
@@ -13,6 +17,9 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="fms_Device")
+@JsonIdentityInfo(
+		  generator = ObjectIdGenerators.PropertyGenerator.class, 
+		  property = "id")
 public class Device implements Serializable {
 
 	   
@@ -22,7 +29,7 @@ public class Device implements Serializable {
 	@Id
 	@GeneratedValue
 	private Integer idDevice;
-	
+	@JsonManagedReference
 	@ManyToOne
 	@JoinColumn(name="owner",referencedColumnName="idMember")
 	private User owner;

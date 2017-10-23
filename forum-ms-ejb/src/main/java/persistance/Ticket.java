@@ -4,12 +4,18 @@ import java.io.Serializable;
 import java.lang.Integer;
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 /**
  * Entity implementation class for Entity: Ticket
  *
  */
 @Entity
 @Table(name="fms_ticket")
+@JsonIdentityInfo(
+		  generator = ObjectIdGenerators.PropertyGenerator.class, 
+		  property = "id")
 public class Ticket implements Serializable {
 
 	   

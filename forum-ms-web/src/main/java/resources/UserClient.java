@@ -41,7 +41,7 @@ import persistance.User;
 
 @Path("/user")
 @RequestScoped
-public class Client {
+public class UserClient {
 	@Inject
 	IUserManagerLocal userManager ;
 	private final String UPLOADED_FILE_PATH = "E:\\test\\";

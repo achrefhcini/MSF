@@ -7,6 +7,10 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+
 
 /**
  * Entity implementation class for Entity: User
@@ -14,20 +18,22 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="fms_member")
+@JsonIdentityInfo(
+		  generator = ObjectIdGenerators.PropertyGenerator.class, 
+		  property = "id")
 public class User implements Serializable {
 
 	   
 	@Id
 	@GeneratedValue
 	private Integer idMember;
-	
+
 	@ManyToMany(fetch = FetchType.EAGER,mappedBy="groupMembres")
 	private Set<Group> groupsAsMembre;
 	
-	
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Group> groupsAsCreator;
-	
+
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="owner")
 	private Set<Device> Devices;
 	
@@ -36,7 +42,6 @@ public class User implements Serializable {
 	
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Topic> topicsAsCreator;
-	
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<SubSection> subSectionsAsCreator;
 	
@@ -91,6 +96,7 @@ public class User implements Serializable {
 	private UserGender gender;
 	private Boolean connected;
 	private String token;
+	private int points;
 	
 	
 	public User() {
@@ -103,6 +109,7 @@ public class User implements Serializable {
 		this.role = UserRole.MEMBER;
 		this.isEnabled = Boolean.FALSE;
 		this.creationDate = new Date();
+		this.points=50;
 	}
  
 	public Integer getId() {
@@ -299,6 +306,14 @@ public class User implements Serializable {
 
 	public void setDevices(Set<Device> devices) {
 		Devices = devices;
+	}
+
+	public int getPoints() {
+		return points;
+	}
+
+	public void setPoints(int points) {
+		this.points = points;
 	}
    
 }

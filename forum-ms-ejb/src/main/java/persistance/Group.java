@@ -7,12 +7,19 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+
 /**
  * Entity implementation class for Entity: Group
  *
  */
 @Entity
 @Table(name="fms_group")
+@JsonIdentityInfo(
+		  generator = ObjectIdGenerators.PropertyGenerator.class, 
+		  property = "id")
 public class Group implements Serializable {
 
 	@Id
@@ -21,9 +28,11 @@ public class Group implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date creationDate;
 	private String name;
-	@ManyToMany
+
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinColumn(name="groupMembres",referencedColumnName="idMember")
 	private Set<User> groupMembres;
+	
 	@ManyToOne
 	@JoinColumn(name="creator",referencedColumnName="idMember")
 	private User creator;
@@ -33,9 +42,8 @@ public class Group implements Serializable {
 	public Group() {
 		super();
 	} 
-	public Group(String name, User creator) {
+	public Group(String name) {
 		this.name = name;
-		this.creator = creator;
 		this.creationDate=new Date();
 	}
 	public Integer getIdGroup() {
@@ -70,6 +78,7 @@ public class Group implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	
    
 }

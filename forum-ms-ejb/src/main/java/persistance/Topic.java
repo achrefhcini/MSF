@@ -6,12 +6,18 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 /**
  * Entity implementation class for Entity: Topic
  *
  */
 @Entity
 @Table(name="fms_topic")
+@JsonIdentityInfo(
+		  generator = ObjectIdGenerators.PropertyGenerator.class, 
+		  property = "id")
 public class Topic implements Serializable {
 
 	   
