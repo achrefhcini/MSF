@@ -1,4 +1,7 @@
 package services;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,12 +15,16 @@ import iservices.ITopicManagerLocal;
 import persistance.RateTopic;
 import persistance.Topic;
 import persistance.User;
+import util.Email;
+import util.TimerSessionBeanRemote;
 
 
 @Stateless
 public class TopicService implements ITopicManagerLocal {
 	@PersistenceContext(unitName="forumMS")
 	EntityManager entityManager;
+	
+	TimerSessionBeanRemote timerManager ;
 	@Override
 	public Topic GetTopicById(int id) {
 		return entityManager.find(Topic.class, id);
@@ -40,11 +47,17 @@ public class TopicService implements ITopicManagerLocal {
 	public boolean updateTopic(String titre_topic,String description,int id) {
 		   try{
 		    Topic topic =entityManager.find(Topic.class, id);
+		    if(topic == null)
+		    {
+		    	return false;
+		    }else
+		    {
             topic.setTitre_topic(titre_topic);
             topic.setDescription(description);
             entityManager.merge(topic); 
             entityManager.flush();
             return true;
+		    }
 		   }
 		   catch(Exception e){
             return false;
@@ -54,9 +67,15 @@ public class TopicService implements ITopicManagerLocal {
         public boolean deleteTopic(int id){
 		try{
 			 Topic topic =entityManager.find(Topic.class, id);
+			 if(topic == null)
+			 {
+				 return false;
+			 }else
+			 {
 	            entityManager.remove(topic); 
 	            entityManager.flush();
 	            return true;
+			 }
 		}
            catch(Exception e){
         	   return false;
@@ -64,7 +83,7 @@ public class TopicService implements ITopicManagerLocal {
         }
 
 	@Override
-	public List<Topic> GetAllTopic() {
+	public List<Topic> GetAllTopic_admin() {
 		return (List<Topic>)entityManager.createQuery("SELECT t FROM Topic t",Topic.class).getResultList();
 	}
 	@Override
@@ -158,5 +177,131 @@ public class TopicService implements ITopicManagerLocal {
 			return false;
 		}
 	}
+
+	@Override
+	public List<Topic> GetAllTopicSortAverage() {
+		List<Topic> topicliste = entityManager.createQuery("SELECT t FROM Topic t ORDER BY t.Moyenne DESC",Topic.class).getResultList();
+		return topicliste;
+	}
+
+	@Override
+	public List<Topic> GetAllTopicSortDate() {
+		List<Topic> topicliste = entityManager.createQuery("SELECT t FROM Topic t ORDER BY t.creationDate DESC",Topic.class).getResultList();
+		return topicliste;
+	}
+
+	@Override
+	public List<Topic> GetAllTopic() {
+		return (List<Topic>)entityManager.createQuery("SELECT t FROM Topic t WHERE t.isBlocked = 0",Topic.class).getResultList();
+	}
+
+	@Override
+	public boolean BlockTopic(Topic topic, int periode) {
+	try{
+		if(topic.getIsBlocked() == 0)
+		{
+			topic.setIsBlocked(1);
+			Date t = new Date();
+			Date t2 =new Date();
+			topic.setBlockDate(t);
+			topic.setPeriode(periode);
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(t2);
+			cal.add(Calendar.DAY_OF_WEEK, periode);
+			t2.setTime(cal.getTime().getTime()); // or
+			t2 = new Timestamp(cal.getTime().getTime());
+			topic.setDeBlockDate(t2);
+			entityManager.merge(topic);
+			entityManager.flush();
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		
+	} catch (Exception e) {
+		return false;
+	}
+	}
+
+	@Override
+	public boolean DeBlockTopic(Topic topic) {
+		try{
+			if(topic.getIsBlocked() == 1)
+			{
+			topic.setIsBlocked(0);
+			topic.setBlockDate(null);
+			topic.setPeriode(0);
+			topic.setDeBlockDate(null);
+			entityManager.merge(topic);
+			entityManager.flush();
+			return true;
+			}
+			else{
+				return false;
+				}
+			}
+		catch (Exception e) {
+			return false;
+		}
+		} 
+	
+
+	@Override
+	public boolean VerifBlock(Topic topic) {
+		int block = topic.getIsBlocked();
+		if(block == 1)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+	@Override
+	public boolean DeblockTopicAutomatic(Topic topic, int periode) {
+			topic.setIsBlocked(0);
+			topic.setBlockDate(null);
+			topic.setPeriode(0);
+			topic.setDeBlockDate(null);
+			entityManager.merge(topic);
+			entityManager.flush();
+			return true;
+	}
+
+	@Override
+	public boolean sendmailblock(User user,Topic topic) {
+		try{
+		String mail = user.getEmail();
+		String body = "Your topic "+topic.getTitre_topic()+" is blocked for "+topic.getPeriode()+" days";
+		String Subject = "Topic Blocked";
+		Email.generateAndSendEmail(mail, Subject, body);
+		return true;
+		}
+		catch(Exception e)
+		{
+			return false;
+		}
+		
+	}
+
+	@Override
+	public boolean sendmaildeblock(User user,Topic topic) {
+		try{
+		String mail = user.getEmail();
+		String body = "Your topic "+topic.getTitre_topic()+" is deblocked now ";
+		String Subject = "Topic Deblocked";
+		Email.generateAndSendEmail(mail, Subject, body);
+		return true;
+		}
+		catch(Exception e)
+		{
+			return false;
+		}
+	}
+
 
 }

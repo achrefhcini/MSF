@@ -23,6 +23,7 @@ import iservices.IUserManagerLocal;
 import persistance.RateTopic;
 import persistance.Topic;
 import persistance.User;
+import util.TimerSessionBeanRemote;
 
 @Path("/topic")
 @RequestScoped
@@ -31,6 +32,9 @@ public class topicClient {
 	ITopicManagerLocal topicManager ;
 	@Inject
 	IUserManagerLocal userManager ;
+	@Inject
+	TimerSessionBeanRemote timerManager ;
+
 	
 	@Path("/getTopicById/{id}")
 	@GET
@@ -59,6 +63,18 @@ public class topicClient {
 	}
 	
 	
+	@Path("/getAllTopicAdmin")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@JsonIgnore
+	public Response getallTopicadmin()
+	{
+		List<Topic> topiclist = topicManager.GetAllTopic_admin();
+		return Response.ok(topiclist).build();
+	}
+	
+	
 	@Path("/getAllTopic")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -67,6 +83,30 @@ public class topicClient {
 	public Response getallTopic()
 	{
 		List<Topic> topiclist = topicManager.GetAllTopic();
+		return Response.ok(topiclist).build();
+	}
+	
+	
+	@Path("/getAllTopicSortAverage")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@JsonIgnore
+	public Response getallTopicsortaverage()
+	{
+		List<Topic> topiclist = topicManager.GetAllTopicSortAverage();
+		return Response.ok(topiclist).build();
+	}
+	
+	
+	@Path("/getAllTopicSortDate")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@JsonIgnore
+	public Response getallTopicsortdate()
+	{
+		List<Topic> topiclist = topicManager.GetAllTopicSortDate();
 		return Response.ok(topiclist).build();
 	}
 	
@@ -108,7 +148,7 @@ public class topicClient {
 	@Path("/addTopic")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
+	@Consumes()
 	public Response addtopic(
 			@QueryParam("titre_topic") String titre_topic,
 			@QueryParam("description") String description,
@@ -165,4 +205,44 @@ public class topicClient {
 		return Response.ok(topicManager.updateTopic(titre_topic, description,id)).build();
 	}
 	
+	
+	@Path("/blockTopic/{id}")
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response blocktopic(@PathParam("id") int idTopic,
+			@QueryParam("periode") int periode
+			)
+	{
+		   
+		Topic topic = topicManager.GetTopicById(idTopic);
+		boolean val = topicManager.BlockTopic(topic,periode);
+		Topic topic2 = topicManager.GetTopicById(idTopic);
+		timerManager.createTimer(periode,topic2);
+		if( val == true)
+		{
+			User user = topic.getCreator();
+			topicManager.sendmailblock(user, topic);
+		}
+		return Response.ok(val).build();
+	}
+	
+	
+	@Path("/deblockTopic/{id}")
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response deblocktopic(@PathParam("id") int idTopic
+			)
+	{
+		Topic topic = topicManager.GetTopicById(idTopic);
+		boolean val = topicManager.DeBlockTopic(topic);
+		timerManager.destroy();
+		if( val == true)
+		{
+			User user = topic.getCreator();
+			topicManager.sendmaildeblock(user, topic);
+		}
+		return Response.ok(val).build();
+	}
 }

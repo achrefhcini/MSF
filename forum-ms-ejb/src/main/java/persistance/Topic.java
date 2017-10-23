@@ -2,10 +2,9 @@ package persistance;
 
 import java.io.Serializable;
 import java.lang.Integer;
+import java.util.Date;
 import java.util.Set;
-
 import javax.persistence.*;
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
@@ -24,6 +23,15 @@ public class Topic implements Serializable {
     private String Titre_topic;
     private String Description;
     private float Moyenne;
+    @Temporal(TemporalType.TIMESTAMP)
+	private Date creationDate;
+    @Temporal(TemporalType.TIMESTAMP)
+	private Date blockDate;
+    @Temporal(TemporalType.TIMESTAMP)
+	private Date deBlockDate;
+    
+	private int periode;
+    private int isBlocked;
 	
 	@ManyToOne
 	@JoinColumn(name="parentSubSection",referencedColumnName="idSubSection")
@@ -45,6 +53,8 @@ public class Topic implements Serializable {
 		super();
 		Titre_topic = titre_topic;
 		Description = description;
+		this.isBlocked = 0;
+		this.creationDate = new Date();
 	}
 	public Topic() {
 		super();
@@ -73,10 +83,11 @@ public class Topic implements Serializable {
 		Description = description;
 	}
 	public Topic(String titre_topic, String description, User creator) {
-		super();
 		Titre_topic = titre_topic;
 		Description = description;
 		this.creator = creator;
+		this.isBlocked = 0;
+		this.creationDate = new Date();
 	}
 	public SubSection getParentSubSection() {
 		return parentSubSection;
@@ -97,9 +108,39 @@ public class Topic implements Serializable {
 		this.reactions = reactions;
 	}
 	 public float getMoyenne() {
-			return Moyenne;
-		}
-		public void setMoyenne(float moyenne) {
-			Moyenne = moyenne;
-		}
+		return Moyenne;
+	}
+	public void setMoyenne(float moyenne) {
+		Moyenne = moyenne;
+	}
+	public Date getCreationDate() {
+		return creationDate;
+	}
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+	public int getIsBlocked() {
+		return isBlocked;
+	}
+	public void setIsBlocked(int isBlocked) {
+		this.isBlocked = isBlocked;
+	}
+	public Date getBlockDate() {
+		return blockDate;
+	}
+	public void setBlockDate(Date blockDate) {
+		this.blockDate = blockDate;
+	}
+	public int getPeriode() {
+		return periode;
+	}
+	public void setPeriode(int periode) {
+		this.periode = periode;
+	}
+	 public Date getDeBlockDate() {
+		return deBlockDate;
+	}
+	public void setDeBlockDate(Date deBlockDate) {
+		this.deBlockDate = deBlockDate;
+	}
 }
