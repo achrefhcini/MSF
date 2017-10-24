@@ -2,10 +2,12 @@ package persistance;
 
 import java.io.Serializable;
 import java.lang.Integer;
+import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.*;
 /**
  * Entity implementation class for Entity: Section
  *
@@ -19,17 +21,24 @@ public class Section implements Serializable {
 	@GeneratedValue
 	private Integer idSection;
 	
+	private String Title;
+	private Date creationDate;
+	private boolean isLocked;
+	
 	@ManyToOne
 	@JoinColumn(name="creator",referencedColumnName="idMember")
 	private User creator;
+	
 	@OneToOne
 	@JoinColumn(name="administrator",referencedColumnName="idMember")
 	private User administrator;
 	
-	@OneToMany(fetch = FetchType.EAGER,mappedBy="parentSection")
+	@JsonIgnore
+	@OneToMany(mappedBy="parentSection")
 	private Set<Services> servicesAsParent;
 	
-	@OneToMany(fetch = FetchType.EAGER,mappedBy="parentSection")
+	@JsonIgnore
+	@OneToMany(mappedBy="parentSection", orphanRemoval=true)
 	private Set<SubSection> subSectionsAsParent;
 	
 	private static final long serialVersionUID = 1L;
@@ -68,6 +77,24 @@ public class Section implements Serializable {
 	public void setSubSectionsAsParent(Set<SubSection> subSectionsAsParent) {
 		this.subSectionsAsParent = subSectionsAsParent;
 	}
+	public String getTitle() {
+		return Title;
+	}
+	public void setTitle(String title) {
+		Title = title;
+	}
 	
-   
+	@Temporal(TemporalType.DATE)
+	public Date getCreationDate() {
+		return creationDate;
+	}
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+	public boolean isLocked() {
+		return isLocked;
+	}
+	public void setLocked(boolean isLocked) {
+		this.isLocked = isLocked;
+	}
 }

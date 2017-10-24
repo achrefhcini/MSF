@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.*;
 
 /**
  * Entity implementation class for Entity: User
@@ -23,33 +24,36 @@ public class User implements Serializable {
 	
 	@ManyToMany(fetch = FetchType.EAGER,mappedBy="groupMembres")
 	private Set<Group> groupsAsMembre;
-	
-	
+		
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Group> groupsAsCreator;
 	
-	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Section> sectionsAsCreator;
 	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Topic> topicsAsCreator;
 	
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<SubSection> subSectionsAsCreator;
 	
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.EAGER,mappedBy="moderators")
 	private Set<SubSection> subSectionsAsModerator;
 	
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Services> servicesAsCreator;
 	
+	@JsonIgnore
 	@OneToOne(fetch = FetchType.EAGER,mappedBy="administrator")
 	private Section sectionAsAdministrator;
 	
 	@OneToOne(fetch = FetchType.EAGER,mappedBy="participant")
 	private Ticket ticket;
 	
+	@JsonIgnore
 	@OneToOne(fetch = FetchType.EAGER,mappedBy="administrator")
 	private SubSection subSectionAsAdministrator;
 	

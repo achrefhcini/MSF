@@ -2,9 +2,12 @@ package persistance;
 
 import java.io.Serializable;
 import java.lang.Integer;
+import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.*;
 
 /**
  * Entity implementation class for Entity: SubSection
@@ -19,6 +22,10 @@ public class SubSection implements Serializable {
 	@GeneratedValue
 	private Integer idSubSection;
 	
+	private String Title;
+	private Date creationDate;
+	private boolean isHidden;
+	
 	@ManyToOne
 	@JoinColumn(name="parentSection",referencedColumnName="idSection")
 	private Section parentSection;
@@ -32,10 +39,12 @@ public class SubSection implements Serializable {
 	private User administrator;
 	
 	@ManyToMany
+	@JsonIgnore
 	@JoinColumn(name="moderators",referencedColumnName="idMember")
 	private Set<User> moderators;
 	
-	@OneToMany(fetch = FetchType.EAGER,mappedBy="parentSubSection")
+	@JsonIgnore
+	@OneToMany(mappedBy="parentSubSection")
 	private Set<Topic> topicsList;
 	
 	private static final long serialVersionUID = 1L;
@@ -80,5 +89,23 @@ public class SubSection implements Serializable {
 	public void setTopicsList(Set<Topic> topicsList) {
 		this.topicsList = topicsList;
 	}
-	
+	public String getTitle() {
+		return Title;
+	}
+	public void setTitle(String title) {
+		Title = title;
+	}
+	@Temporal(TemporalType.DATE)
+	public Date getCreationDate() {
+		return creationDate;
+	}
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+	public boolean isHidden() {
+		return isHidden;
+	}
+	public void setHidden(boolean isHidden) {
+		this.isHidden = isHidden;
+	}
 }
