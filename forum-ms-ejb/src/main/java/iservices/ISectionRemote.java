@@ -3,13 +3,14 @@ package iservices;
 import java.util.List;
 
 import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.persistence.Tuple;
 
 import persistance.Section;
 import utility.Statistics;
 
-@Local
-public interface ISectionLocal {
+@Remote
+public interface ISectionRemote {
 	/**
 	 * sub sections are not included
 	 * @param include_subsections removed param 

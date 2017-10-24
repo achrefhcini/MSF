@@ -1,6 +1,6 @@
 package services;
 
-import iservices.ISection;
+import iservices.ISectionLocal;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,9 +20,9 @@ import utility.Statistics;
  * Session Bean implementation class SectionBusiness
  */
 @Stateless
-@Local(ISection.class)
+@Local(ISectionLocal.class)
 @LocalBean
-public class SectionBusiness implements ISection {
+public class SectionBusiness implements ISectionLocal {
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -35,7 +35,7 @@ public class SectionBusiness implements ISection {
     }
 
 	/**
-     * @see ISection#getAllSections()
+     * @see ISectionLocal#getAllSections()
      */
     public List<Section> getAllSections() {
     	List<Section> sections = entityManager.createQuery("Select s from Section s", Section.class).getResultList();
@@ -51,7 +51,7 @@ public class SectionBusiness implements ISection {
     }
 
 	/**
-     * @see ISection#setSectionLock(int)
+     * @see ISectionLocal#setSectionLock(int)
      * @see https://stackoverflow.com/questions/8307578/what-is-the-best-way-to-update-the-entity-in-jpa
      */
     public boolean setSectionLock(int sectionID) {
@@ -71,7 +71,7 @@ public class SectionBusiness implements ISection {
     }
 
 	/**
-     * @see ISection#addSection(Section)
+     * @see ISectionLocal#addSection(Section)
      */
     public boolean addSection(Section section) {
     	try {
@@ -92,7 +92,7 @@ public class SectionBusiness implements ISection {
     }
 
 	/**
-     * @see ISection#editSection(Section)
+     * @see ISectionLocal#editSection(Section)
      */
     public boolean editSection(Section section) {
     	try {
@@ -108,7 +108,7 @@ public class SectionBusiness implements ISection {
     }
 
 	/**
-     * @see ISection#getSectionByID(int)
+     * @see ISectionLocal#getSectionByID(int)
      */
     public Section getSectionByID(int sectionID) {
     	Section foundSection = entityManager.find(Section.class, sectionID);
@@ -117,7 +117,7 @@ public class SectionBusiness implements ISection {
     }
 
 	/**
-     * @see ISection#deleteSection(int)
+     * @see ISectionLocal#deleteSection(int)
      */
     public boolean deleteSection(int sectionID) {
     	try {

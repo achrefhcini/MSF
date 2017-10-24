@@ -3,11 +3,12 @@ package iservices;
 import java.util.List;
 
 import javax.ejb.Local;
+import javax.ejb.Remote;
 
 import persistance.SubSection;
 
-@Local
-public interface ISubSectionLocal {
+@Remote
+public interface ISubSectionRemote {
 	public List<SubSection> getAllSubSectionsOfSection(int sectionID);
 	public SubSection getSubSectionByID(int id);
 	/**
