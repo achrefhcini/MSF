@@ -35,116 +35,6 @@ public class topicClient {
 	@Inject
 	TimerSessionBeanRemote timerManager ;
 
-	
-	@Path("/getTopicById/{id}")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.TEXT_PLAIN)
-	public Response getTopicById(@PathParam("id") int id)
-	{
-		Topic topic=topicManager.GetTopicById(id);
-		if(topic!=null)
-		{
-			return Response.ok(topic).build();
-		}
-			
-		return Response.status(Status.NO_CONTENT).build();
-	}
-	
-	@Path("/getreactionTopics/{id}")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.TEXT_PLAIN)
-	@JsonIgnore
-	public Response getreationtopics(@PathParam("id") int id)
-	{
-		Set<RateTopic> topiclist = topicManager.GetTopicreactions(id);
-		return Response.ok(topiclist).build();
-	}
-	
-	
-	@Path("/getAllTopicAdmin")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.TEXT_PLAIN)
-	@JsonIgnore
-	public Response getallTopicadmin()
-	{
-		List<Topic> topiclist = topicManager.GetAllTopic_admin();
-		return Response.ok(topiclist).build();
-	}
-	
-	
-	@Path("/getAllTopic")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.TEXT_PLAIN)
-	@JsonIgnore
-	public Response getallTopic()
-	{
-		List<Topic> topiclist = topicManager.GetAllTopic();
-		return Response.ok(topiclist).build();
-	}
-	
-	
-	@Path("/getAllTopicSortAverage")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.TEXT_PLAIN)
-	@JsonIgnore
-	public Response getallTopicsortaverage()
-	{
-		List<Topic> topiclist = topicManager.GetAllTopicSortAverage();
-		return Response.ok(topiclist).build();
-	}
-	
-	
-	@Path("/getAllTopicSortDate")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.TEXT_PLAIN)
-	@JsonIgnore
-	public Response getallTopicsortdate()
-	{
-		List<Topic> topiclist = topicManager.GetAllTopicSortDate();
-		return Response.ok(topiclist).build();
-	}
-	
-	
-	@Path("/getUserReactions/{id}")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.TEXT_PLAIN)
-	@JsonIgnore
-	public Response getuserreactions(@PathParam("id") int id)
-	{
-		Set<RateTopic> topiclist = topicManager.GetUserAllRateTopic(id);
-		return Response.ok(topiclist).build();
-	}
-	
-	
-	@Path("/getUserTopics/{id}")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.TEXT_PLAIN)
-	@JsonIgnore
-	public Response getusertopics(@PathParam("id") int id)
-	{
-		Set<Topic> topiclist = topicManager.GetUserAllTopic(id);
-		return Response.ok(topiclist).build();
-	}
-	
-	
-	@Path("/deleteTopic/{id}")
-	@POST
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes()
-	public Response deletetopic(@PathParam("id") int id)
-	{
-		return Response.ok(topicManager.deleteTopic(id)).build();
-	}
-	
-	
 	@Path("/addTopic")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -164,6 +54,84 @@ public class topicClient {
 		Topic topic = new Topic(titre_topic,description,user2);
 		return Response.ok(topicManager.AddTopic(topic)).build();
 	}
+	
+	
+	@Path("/updateTopic")
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response updatetopic(
+			@QueryParam("titre_topic") String titre_topic,
+			@QueryParam("description") String description,
+			@QueryParam("idTopic") int id
+			)
+	{
+		return Response.ok(topicManager.updateTopic(titre_topic, description,id)).build();
+	}
+	
+	
+	@Path("/deleteTopic/{id}")
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes()
+	public Response deletetopic(@PathParam("id") int id)
+	{
+		return Response.ok(topicManager.deleteTopic(id)).build();
+	}
+	
+	
+	@Path("/getTopicById/{id}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	public Response getTopicById(@PathParam("id") int id)
+	{
+		Topic topic=topicManager.GetTopicById(id);
+		if(topic!=null)
+		{
+			return Response.ok(topic).build();
+		}
+			
+		return Response.status(Status.NO_CONTENT).build();
+	}
+	
+	
+	@Path("/getAllTopic")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@JsonIgnore
+	public Response getallTopic()
+	{
+		List<Topic> topiclist = topicManager.GetAllTopic();
+		return Response.ok(topiclist).build();
+	}
+	
+	
+	@Path("/getAllTopicAdmin")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@JsonIgnore
+	public Response getallTopicadmin()
+	{
+		List<Topic> topiclist = topicManager.GetAllTopic_admin();
+		return Response.ok(topiclist).build();
+	}
+	
+	
+	@Path("/getAllTopicSortDate")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@JsonIgnore
+	public Response getallTopicsortdate()
+	{
+		List<Topic> topiclist = topicManager.GetAllTopicSortDate();
+		return Response.ok(topiclist).build();
+	}
+	
+	
 	@Path("/addRateTopic")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -174,6 +142,9 @@ public class topicClient {
 			@QueryParam("idMember") int idMember
 			)
 	{
+		Topic t = topicManager.GetTopicById(idTopic);
+		User u = userManager.GetUserById(idMember);
+		if(topicManager.verifTopicCreator(u, t) == true){
 		if(topicManager.UserRateExist(idMember, idTopic)==false)
 		{
 		boolean valid = topicManager.AddRateTopic(idTopic,rateValue,idMember);
@@ -189,20 +160,56 @@ public class topicClient {
 			topicManager.GenerateRate(topic);
 			return Response.ok(valid).build();
 		}
+		}
+		else{
+			return Response.status(Status.NO_CONTENT).build();
+		}
 	}
 	
 	
-	@Path("/updateTopic")
-	@POST
+	@Path("/getAllTopicSortAverage")
+	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response updatetopic(
-			@QueryParam("titre_topic") String titre_topic,
-			@QueryParam("description") String description,
-			@QueryParam("idTopic") int id
-			)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@JsonIgnore
+	public Response getallTopicsortaverage()
 	{
-		return Response.ok(topicManager.updateTopic(titre_topic, description,id)).build();
+		List<Topic> topiclist = topicManager.GetAllTopicSortAverage();
+		return Response.ok(topiclist).build();
+	}
+	
+	
+	@Path("/getUserReactions/{id}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@JsonIgnore
+	public Response getuserreactions(@PathParam("id") int id)
+	{
+		Set<RateTopic> topiclist = topicManager.GetUserAllRateTopic(id);
+		return Response.ok(topiclist).build();
+	}
+	
+	@Path("/getreactionTopics/{id}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@JsonIgnore
+	public Response getreationtopics(@PathParam("id") int id)
+	{
+		Set<RateTopic> topiclist = topicManager.GetTopicreactions(id);
+		return Response.ok(topiclist).build();
+	}	
+	
+	@Path("/getUserTopics/{id}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@JsonIgnore
+	public Response getusertopics(@PathParam("id") int id)
+	{
+		Set<Topic> topiclist = topicManager.GetUserAllTopic(id);
+		return Response.ok(topiclist).build();
 	}
 	
 	
@@ -237,7 +244,7 @@ public class topicClient {
 	{
 		Topic topic = topicManager.GetTopicById(idTopic);
 		boolean val = topicManager.DeBlockTopic(topic);
-		timerManager.destroy();
+		timerManager.destroy(topic);
 		if( val == true)
 		{
 			User user = topic.getCreator();
@@ -245,4 +252,7 @@ public class topicClient {
 		}
 		return Response.ok(val).build();
 	}
+	
+	
+
 }

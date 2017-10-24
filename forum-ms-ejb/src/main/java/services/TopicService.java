@@ -228,7 +228,7 @@ public class TopicService implements ITopicManagerLocal {
 	@Override
 	public boolean DeBlockTopic(Topic topic) {
 		try{
-			if(topic.getIsBlocked() == 1)
+			if(VerifBlock(topic) == false)
 			{
 			topic.setIsBlocked(0);
 			topic.setBlockDate(null);
@@ -262,17 +262,6 @@ public class TopicService implements ITopicManagerLocal {
 	}
 
 	@Override
-	public boolean DeblockTopicAutomatic(Topic topic, int periode) {
-			topic.setIsBlocked(0);
-			topic.setBlockDate(null);
-			topic.setPeriode(0);
-			topic.setDeBlockDate(null);
-			entityManager.merge(topic);
-			entityManager.flush();
-			return true;
-	}
-
-	@Override
 	public boolean sendmailblock(User user,Topic topic) {
 		try{
 		String mail = user.getEmail();
@@ -300,6 +289,18 @@ public class TopicService implements ITopicManagerLocal {
 		catch(Exception e)
 		{
 			return false;
+		}
+	}
+
+	@Override
+	public boolean verifTopicCreator(User user,Topic topic) {
+		if(user.getIdMember() == topic.getCreator().getIdMember())
+		{
+			return false;
+		}
+		else
+		{
+			return true;
 		}
 	}
 

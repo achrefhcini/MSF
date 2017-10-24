@@ -26,12 +26,12 @@ public interface ITopicManagerLocal {
 	public List<Topic> GetAllTopicSortAverage();
 	public List<Topic> GetAllTopicSortDate();
 	public List<Topic> GetAllTopic();
+	public boolean verifTopicCreator(User user,Topic topic);
 	////////////////////////////////////////////////////////Partie Admin
 	public List<Topic> GetAllTopic_admin();
 	public boolean BlockTopic(Topic topic,int periode);
 	public boolean DeBlockTopic(Topic topic);
 	public boolean VerifBlock(Topic topic);
-	public boolean DeblockTopicAutomatic(Topic topic, int periode);
 	public boolean sendmailblock(User user,Topic topic);
 	public boolean sendmaildeblock(User user,Topic topic);
 }

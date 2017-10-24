@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.Timeout;
@@ -48,10 +47,14 @@ public class TimerSessionBean implements TimerSessionBeanRemote{
 				
 			}
 	   }
-   public void destroy() {
-   	// TODO Add unimplemented method
+   public void destroy(Topic topic) {
    	for (Timer timer : timerService.getTimers()) {
-   		timer.cancel();
+   		Topic top = (Topic) timer.getInfo();
+   		if(top.equals(topic))
+   		{
+   			timer.cancel();
+   		}
+   		
    	}
    }
 	   @Timeout
