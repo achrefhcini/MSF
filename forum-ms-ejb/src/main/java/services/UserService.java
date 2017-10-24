@@ -425,8 +425,7 @@ public class UserService implements IUserManagerLocal
 			return null;
 		}
 	}
-	public JsonObject updateFirstname(int idUser, String firstname) {
-		User user = getUserById(idUser);
+	public JsonObject updateFirstname(User user, String firstname) {
 		if(user!=null)
 		{
 			 if(user.getIsEnabled())
@@ -444,12 +443,11 @@ public class UserService implements IUserManagerLocal
 				}
 		}else
 		{
-			return Json.createObjectBuilder().add("error", "there are no user with ID: "+idUser).build();	
+			return Json.createObjectBuilder().add("error", "user does not exist").build();	
 		}
 		
 	}
-	public JsonObject updateLastname(int idUser, String lastname) {
-		User user = getUserById(idUser);
+	public JsonObject updateLastname(User user, String lastname) {
 		if(user!=null)
 		{
 			 if(user.getIsEnabled())
@@ -467,11 +465,10 @@ public class UserService implements IUserManagerLocal
 				}
 		}else
 		{
-			return Json.createObjectBuilder().add("error", "there are no user with ID: "+idUser).build();	
+			return Json.createObjectBuilder().add("error", "user does not exist").build();	
 		}
 	}
-	public JsonObject updateBirthDate(int idUser, Date BirthDate) {
-		User user = getUserById(idUser);
+	public JsonObject updateBirthDate(User user, Date BirthDate) {
 		if(user!=null)
 		{
 			 if(user.getIsEnabled())
@@ -489,11 +486,10 @@ public class UserService implements IUserManagerLocal
 				}
 		}else
 		{
-			return Json.createObjectBuilder().add("error", "there are no user with ID: "+idUser).build();	
+			return Json.createObjectBuilder().add("error", "user does not exist").build();	
 		}
 	}
-	public JsonObject updatePhoneNumber(int idUser, String phoneNumber) {
-		User user = getUserById(idUser);
+	public JsonObject updatePhoneNumber(User user, String phoneNumber) {
 		if(user!=null)
 		{
 			 if(user.getIsEnabled())
@@ -511,11 +507,10 @@ public class UserService implements IUserManagerLocal
 				}
 		}else
 		{
-			return Json.createObjectBuilder().add("error", "there are no user with ID: "+idUser).build();	
+			return Json.createObjectBuilder().add("error", "user does not exist").build();	
 		}
 	}
-	public JsonObject updateGender(int idUser, UserGender gender) {
-		User user = getUserById(idUser);
+	public JsonObject updateGender(User user, UserGender gender) {
 		if(user!=null)
 		{
 			 if(user.getIsEnabled())
@@ -533,7 +528,7 @@ public class UserService implements IUserManagerLocal
 				}
 		}else
 		{
-			return Json.createObjectBuilder().add("error", "there are no user with ID: "+idUser).build();	
+			return Json.createObjectBuilder().add("error", "user does not exist").build();	
 		}
 	}
 	public List<User> getUsersAbleModerator() {

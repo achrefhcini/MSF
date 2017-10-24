@@ -3,14 +3,14 @@ package iservices;
 import java.util.Date;
 import java.util.List;
 
-import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.json.JsonObject;
 import persistance.Device;
 import persistance.User;
 import persistance.UserGender;
 
-@Local
-public interface IUserManagerLocal 
+@Remote
+public interface IUserManagerRemote 
 {
 	public User getUserById(int id);
 	public User getUserByUsername(String username);

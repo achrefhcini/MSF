@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,6 +31,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
@@ -38,6 +40,7 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import iservices.IUserManagerLocal;
 import persistance.Device;
 import persistance.User;
+import persistance.UserGender;
 
 @Path("/user")
 @RequestScoped
@@ -45,11 +48,10 @@ public class UserClient {
 	@Inject
 	IUserManagerLocal userManager ;
 	private final String UPLOADED_FILE_PATH = "E:\\test\\";
-	//******************************************************
+	//XXX *********************getUserById*********************************
 	@Path("/getUserById/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.TEXT_PLAIN)
 	public Response getUserById(@PathParam("id") int id)
 	{
 		User user=userManager.getUserById(id);
@@ -60,11 +62,10 @@ public class UserClient {
 			
 		return Response.status(Status.NO_CONTENT).build();
 	}
-	//******************************************************
+	//XXX **********************getUserByUsername********************************
 	@Path("/getUserByUsername/{username}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.TEXT_PLAIN)
 	public Response getUserByUsername(@PathParam("username") String username)
 	{
 		User user=userManager.getUserByUsername(username);
@@ -75,11 +76,10 @@ public class UserClient {
 			
 		return Response.status(Status.NO_CONTENT).build();
 	}
-	//******************************************************
-	@Path("/getUserByUsername/{email}")
+	//XXX *************************getUserByEmail*****************************
+	@Path("/getUserByEmail/{email}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.TEXT_PLAIN)
 	public Response getUserByEmail(@PathParam("email") String email)
 	{
 		User user=userManager.getUserByEmail(email);
@@ -90,11 +90,10 @@ public class UserClient {
 			
 		return Response.status(Status.NO_CONTENT).build();
 	}
-	//******************************************************
+	//XXX **************************quickSignup****************************
 	@Path("/addUser")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes()
 	public Response quickSignup(
 			@Context HttpServletRequest req,
 			@QueryParam("email") String email,
@@ -109,11 +108,10 @@ public class UserClient {
 		Device device = new Device(user,tab[0],tab[1],remoteHost,Boolean.FALSE);
 		return Response.ok(userManager.quickSignup(user,device)).build();
 	}
-	//******************************************************
+	//XXX ****************************login**************************
 	@Path("/login")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes()
 	public Response login(
 			@Context HttpServletRequest req,
 			@QueryParam("usernameOrEmail") String username,
@@ -141,7 +139,7 @@ public class UserClient {
 		}
 		
 	}
-	//******************************************************
+	//XXX ************************logout******************************
 	@Path("/logout/{idUser}/{idDevice}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -151,41 +149,39 @@ public class UserClient {
 			) {
 	    return Response.ok(userManager.logout(idUser,idDevice)).build();
 	}
-	//******************************************************
-	
-	@Path("/enable/{username}/{token}")
+	//XXX **********************isConnected********************************
+	@Path("/isConnected/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.TEXT_PLAIN)
-	public Response enable(@PathParam("username") String username,@PathParam("token") String token)
+	public Response isConnected(@PathParam("id") int id)
+	{
+		return Response.ok(userManager.isConnected(id)).build();
+	}
+	//XXX **********************isConnected********************************
+		@Path("/isConnected/{usernameOrEmail}")
+		@GET
+		@Produces(MediaType.APPLICATION_JSON)
+		public Response isConnected(@PathParam("usernameOrEmail") String usernameOrEmail)
+		{
+			return Response.ok(userManager.isConnected(usernameOrEmail)).build();
+		}
+	//XXX ************************enable******************************
+	@Path("/enableUser/{username}/{token}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response enableUser(@PathParam("username") String username,@PathParam("token") String token)
 	{
 		return Response.ok(userManager.enableUser(username, token)).build();
 	}
-	
-	@Path("/changePassword")
-	@PUT
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes()
-	public Response changePassword(
-			@QueryParam("id") int id,
-			@QueryParam("currentPwd") String currentPwd,
-			@QueryParam("newPwd") String newPwd
-			)
-	{
-		
-		return Response.ok(userManager.changePassword(id, currentPwd, newPwd)).build();
-	}
-	
-	@Path("/ip")
+	//XXX ************************enable******************************
+	@Path("/disableUser/{id}")
 	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	public Response getIp(@Context HttpServletRequest req) {
-	    String tab[]=getOsBrowserUser(req.getHeader("User-Agent"));
-	    return Response.ok("OS: "+tab[0]+" Bowser: "+tab[1]).build();
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response disableUser(@PathParam("id") int id)
+	{
+		return Response.ok(userManager.disableUser(id)).build();
 	}
-
-	
-	
+	//XXX *************************changePicture*****************************
 	@POST
 	@Path("/changePicture")
 	@Consumes("multipart/form-data")
@@ -231,7 +227,209 @@ public class UserClient {
 		    .entity(userManager.chnageProfilPicture(id, fileName)).build();
 
 	}
+	//XXX ************************changePassword******************************
+	@Path("/changePassword")
+	@PUT
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes()
+	public Response changePassword(
+			@QueryParam("id") int id,
+			@QueryParam("currentPwd") String currentPwd,
+			@QueryParam("newPwd") String newPwd
+			)
+	{
+		
+		return Response.ok(userManager.changePassword(id, currentPwd, newPwd)).build();
+	}
+	//XXX ***********************getAllUsers******************************
+	
+	@Path("/getAllUsers")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getAllUser()
+	{
+		return Response.ok(userManager.getAllUser()).build();
+	}
+	//XXX ************************getEnabledUsers******************************
+	
+		@Path("/getEnabledUsers")
+		@GET
+		@Produces(MediaType.APPLICATION_JSON)
+		public Response getEnabledUsers()
+		{
+			return Response.ok(userManager.getEnabledUsers()).build();
+		}
+	//XXX ************************getDisableUsers******************************
+		
+			@Path("/getDisableUsers")
+			@GET
+			@Produces(MediaType.APPLICATION_JSON)
+			public Response getDisableUsers()
+			{
+				return Response.ok(userManager.getEnabledUsers()).build();
+			}
+	//XXX ************************updateFirstname******************************
+			
+			@Path("/updateFirstname")
+			@Secured
+			@PUT
+			@Produces(MediaType.APPLICATION_JSON)
+			public Response updateFirstname
+					(
+							@QueryParam("firstname") String firstname,
+							@Context SecurityContext sc
+					)
+			{
+				String usernameOrEmail=sc.getUserPrincipal().getName();
+				User user=userManager.getUserByUsername(usernameOrEmail);
+				if(user==null)
+				{
+					user=userManager.getUserByEmail(usernameOrEmail);
+				}
+				return Response.ok(userManager.updateFirstname(user,firstname)).build();
+			}
+//XXX ************************updateLastname******************************
+			
+			@Path("/updateLastname")
+			@Secured
+			@PUT
+			@Produces(MediaType.APPLICATION_JSON)
+			public Response updateLastname
+					(
+							@QueryParam("lastname") String lastname,
+							@Context SecurityContext sc
+					)
+			{
+				String usernameOrEmail=sc.getUserPrincipal().getName();
+				User user=userManager.getUserByUsername(usernameOrEmail);
+				if(user==null)
+				{
+					user=userManager.getUserByEmail(usernameOrEmail);
+				}
+				return Response.ok(userManager.updateLastname(user,lastname)).build();
+			}
+//XXX ************************updateLastname******************************
+			
+			@Path("/updateBirthDate")
+			@Secured
+			@PUT
+			@Produces(MediaType.APPLICATION_JSON)
+			public Response updateBirthDate
+					(
+							@QueryParam("BirthDate") Date BirthDate,
+							@Context SecurityContext sc
+					)
+			{
+				String usernameOrEmail=sc.getUserPrincipal().getName();
+				User user=userManager.getUserByUsername(usernameOrEmail);
+				if(user==null)
+				{
+					user=userManager.getUserByEmail(usernameOrEmail);
+				}
+				return Response.ok(userManager.updateBirthDate(user,BirthDate)).build();
+			}	
+//XXX ************************updatePhoneNumber******************************
+			
+			@Path("/updatePhoneNumber")
+			@Secured
+			@PUT
+			@Produces(MediaType.APPLICATION_JSON)
+			public Response updatePhoneNumber
+					(
+							@QueryParam("phoneNumber") String phoneNumber,
+							@Context SecurityContext sc
+					)
+			{
+				String usernameOrEmail=sc.getUserPrincipal().getName();
+				User user=userManager.getUserByUsername(usernameOrEmail);
+				if(user==null)
+				{
+					user=userManager.getUserByEmail(usernameOrEmail);
+				}
+				return Response.ok(userManager.updatePhoneNumber(user,phoneNumber)).build();
+			}	
+//XXX ************************updateGender******************************
+			
+			@Path("/updateGender")
+			@Secured
+			@PUT
+			@Produces(MediaType.APPLICATION_JSON)
+			public Response updateGender
+					(
+							@QueryParam("userGender") String userGender,
+							@Context SecurityContext sc
+					)
+			{
+				String usernameOrEmail=sc.getUserPrincipal().getName();
+				User user=userManager.getUserByUsername(usernameOrEmail);
+				if(user==null)
+				{
+					user=userManager.getUserByEmail(usernameOrEmail);
+				}
+				return Response.ok(userManager.updateGender(user,UserGender.valueOf(userGender))).build();
+			}
+//XXX ************************getUsersAbleModerator******************************			
+			
+			@Path("/getUsersAbleModerator")
+			@GET
+			@Produces(MediaType.APPLICATION_JSON)
+			public Response getUsersAbleModerator() 
+			{
+			    return Response.ok(userManager.getUsersAbleModerator()).build();
+			}				
+//XXX ************************getUsersAbleSectionAdministrator******************************			
+			
+			@Path("/getUsersAbleSectionAdministrator")
+			@GET
+			@Produces(MediaType.APPLICATION_JSON)
+			public Response getUsersAbleSectionAdministrator() 
+			{
+			    return Response.ok(userManager.getUsersAbleSectionAdministrator()).build();
+			}				
+//XXX ************************getUsersAbleSubSectionAdministrator******************************			
+			
+			@Path("/getUsersAbleSubSectionAdministrator")
+			@GET
+			@Produces(MediaType.APPLICATION_JSON)
+			public Response getUsersAbleSubSectionAdministrator() 
+			{
+			    return Response.ok(userManager.getUsersAbleSubSectionAdministrator()).build();
+			}				
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+//utils
 	/**
 	 * header sample
 	 * {
@@ -346,5 +544,22 @@ public class UserClient {
 	    }
 
 	    return job;
+	}
+	//test
+	@Path("/testSecurity")
+	@Secured
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response testSecurity(@Context SecurityContext sc)
+	{
+		sc.getUserPrincipal().getName();
+		return Response.ok(sc.getUserPrincipal().getName()).build();
+	}
+	@Path("/ip")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response getIp(@Context HttpServletRequest req) {
+	    String tab[]=getOsBrowserUser(req.getHeader("User-Agent"));
+	    return Response.ok("OS: "+tab[0]+" Bowser: "+tab[1]).build();
 	}
 }
