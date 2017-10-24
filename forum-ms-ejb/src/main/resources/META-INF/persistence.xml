@@ -12,8 +12,11 @@
 		<class>persistance.Ticket</class>
 		<class>persistance.Topic</class>
 		<class>persistance.User</class>
+		<class>persistance.SupportTicket</class>
+		<class>persistance.SupportWorkFollow</class>
+			<class>persistance.SupportResponse</class>
 		<properties>
-			<property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+			<property name="hibernate.hbm2ddl.auto" value="update"/>
 		</properties>
 	</persistence-unit>
 </persistence>

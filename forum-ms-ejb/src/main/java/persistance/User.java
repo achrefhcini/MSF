@@ -3,15 +3,19 @@ package persistance;
 import java.io.Serializable;
 import java.lang.Integer;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 /**
  * Entity implementation class for Entity: User
  *
  */
+
 @Entity
 @Table(name="fms_member")
 public class User implements Serializable {
@@ -20,50 +24,69 @@ public class User implements Serializable {
 	@Id
 	@GeneratedValue
 	private Integer idMember;
-	
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.EAGER,mappedBy="groupMembres")
 	private Set<Group> groupsAsMembre;
-	
-	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Group> groupsAsCreator;
-	
-	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Section> sectionsAsCreator;
-	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Topic> topicsAsCreator;
-	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<SubSection> subSectionsAsCreator;
-	
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.EAGER,mappedBy="moderators")
 	private Set<SubSection> subSectionsAsModerator;
-	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Services> servicesAsCreator;
-	
+	@JsonIgnore
 	@OneToOne(fetch = FetchType.EAGER,mappedBy="administrator")
 	private Section sectionAsAdministrator;
-	
+	@JsonIgnore
 	@OneToOne(fetch = FetchType.EAGER,mappedBy="participant")
 	private Ticket ticket;
-	
+	@JsonIgnore
 	@OneToOne(fetch = FetchType.EAGER,mappedBy="administrator")
 	private SubSection subSectionAsAdministrator;
-	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="owner")
 	private Set<ActivityHistory> myHistories;
-	
-	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Event> myEvents;
-	
-	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="reactedUser")
 	private Set<RateTopic> myReactions;
 	
+	// -------------------------- Achref relations  ---------------------------
+	/*@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY,mappedBy="concernedUser")
+	private Set<SupportTicket> concernedSupptTicket;
+	@JsonIgnore
+	@OneToMany(mappedBy="userCreation")
+	private Set<SupportResponse> concernedResponseTicket;
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY,mappedBy="userReply")
+	private Set<SupportWorkFollow> replyWorkFollow;
+	*/
+	public User(Integer idMember,String email, String username, String password,UserRole role) {
+		this.idMember=idMember;
+		this.email = email;
+		this.username = username;
+		this.password = password;
+		this.role = role;
+		this.isEnabled = Boolean.TRUE;
+		this.creationDate = new Date();
+	}
+	
+	
+	// ---------------------------------- end relations Achref -------------------
 	private static final long serialVersionUID = 1L;
 	
 	
@@ -84,6 +107,7 @@ public class User implements Serializable {
 	private String image;
 	private String phoneNumber;
 	private UserGender gender;
+	
 	
 	
 	public User() {
