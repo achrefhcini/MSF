@@ -45,14 +45,30 @@ public class topicClient {
 			@QueryParam("creator") int creator
 			)
 	{
+		boolean value = true;
+		List<Topic> listtopic = topicManager.GetAllTopic_admin();
+		for (Topic topic : listtopic) {
+			if(topic.getTitre_topic().equals(titre_topic))
+			{
+				value = false;
+			}
+			
+		}
+		if(value == true)
+		{
+			User user = userManager.GetUserById(creator);
+			User user2 = new User();
+			user2.setIdMember(user.getIdMember());
+			user2.setEmail(user.getEmail());
+			user2.setUsername(user.getUsername());
+			Topic topic = new Topic(titre_topic,description,user2);
+			return Response.ok(topicManager.AddTopic(topic)).build();
+		}
+		else
+		{
+			return Response.status(Status.NO_CONTENT).build();
+		}
 		
-		User user = userManager.GetUserById(creator);
-		User user2 = new User();
-		user2.setIdMember(user.getIdMember());
-		user2.setEmail(user.getEmail());
-		user2.setUsername(user.getUsername());
-		Topic topic = new Topic(titre_topic,description,user2);
-		return Response.ok(topicManager.AddTopic(topic)).build();
 	}
 	
 	

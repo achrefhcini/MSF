@@ -303,6 +303,4 @@ public class TopicService implements ITopicManagerLocal {
 			return true;
 		}
 	}
-
-
 }
