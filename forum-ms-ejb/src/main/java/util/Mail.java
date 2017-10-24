@@ -1,5 +1,6 @@
 package util;
 import java.util.Properties;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -8,6 +9,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 public class Mail 
+
 {
 	static Properties mailServerProperties;
 	static Session getMailSession;
@@ -29,7 +31,8 @@ public class Mail
 		generateMailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 		generateMailMessage.addRecipient(Message.RecipientType.CC, new InternetAddress("wassim9994@gmail.com"));
 		generateMailMessage.setSubject("New Event Created In Multi-Service Forum");
-		String emailBody = "Here the link for the event" + "<br><br> Regards, <br>MSF TEAM";
+		String emailBody = "<h1>Here is th link check it ! ! </h1>" 
+							+ "<img src=\"C:/Users/ASUS/Desktop/event.png\">";
 		generateMailMessage.setContent(emailBody, "text/html");
 		System.out.println("Mail Session has been created successfully..");
  

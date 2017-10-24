@@ -40,7 +40,27 @@
     			<artifactId>jackson-datatype-jsr310</artifactId>
     			<version>2.4.0</version>
 			</dependency>
+		<dependency>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-jaxrs</artifactId>
+    <version>3.1.0.Final</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-multipart-provider</artifactId>
+    <version>3.1.0.Final</version>
+    <scope>provided</scope>
+</dependency>
+<!-- optional, good for handle I/O task -->
+<dependency>
+	<groupId>commons-io</groupId>
+	<artifactId>commons-io</artifactId>
+	<version>2.0.1</version>
+</dependency>
 
+
+    
 	</dependencies>
 
 	<build>

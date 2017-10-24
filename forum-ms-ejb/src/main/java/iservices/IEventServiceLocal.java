@@ -37,4 +37,15 @@ public interface IEventServiceLocal {
 	List<Event>ListOfEventThisWeek();
 
 	String GetEtatEvent(int idevent);
+	
+	List<Event>GetEventsForAjax(String title);
+	
+	boolean ValidateEventByAdmin(Event event);
+	
+	List<Event>GetActiveEventForAdmin();
+	
+	List<Event>GetInActiveEventForAdmin();
+
+	
+	
 }

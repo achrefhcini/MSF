@@ -1,20 +1,18 @@
 package services;
 
 import java.text.ParseException;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import iservices.IEventServiceLocal;
+import iservices.IEventServiceRemote;
 import iservices.IUserManagerLocal;
 import persistance.Event;
 import persistance.User;
 import util.Mail;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -22,7 +20,7 @@ import javax.persistence.TemporalType;
 
 @Stateless
 @LocalBean
-public class EventService implements IEventServiceLocal {
+public class EventService implements IEventServiceLocal,IEventServiceRemote {
 	
 	
 	@PersistenceContext(unitName="forumMS")
@@ -188,15 +186,46 @@ public class EventService implements IEventServiceLocal {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		 List<Event> depts = entityManger.createQuery("Select a From Event a",Event.class).getResultList();
+		 List<Event> depts = entityManger.createQuery("Select a From Event a  WHERE a.idEvent = :idEvent",Event.class).setParameter("idEvent", idevent).getResultList();
 		for(Event ev :depts)
 		{
-			if(ev.getStartDate().after(today))return "Not_Started_Yet";
-			else if(ev.getEndDate().before(today))return "finished";
-			else return "in_progress";
+			if(ev.getStartDate().after(today))return ev.getTitle()+" Not_Started_Yet";
+			else if(ev.getEndDate().before(today))return ev.getTitle()+" finished";
+			else return ev.getTitle()+" in_progress";
 		}
-		return "no";
+		return "no event found";
 	}
+	@Override
+	public List<Event> GetEventsForAjax(String crit) {
+		Query q = entityManger.createNativeQuery("SELECT * FROM `fms_event` WHERE `Title` like ?");
+		q.setParameter(1, crit+"%");
+		List<Event> events = q.getResultList();
+		return events;
+	}
+	@Override
+	public boolean ValidateEventByAdmin(Event event) {
+		try
+		{
+		entityManger.merge(event);
+		return true;
+		}catch(Exception e)
+		{
+		return false;
+		}
+	}
+	@Override
+	public List<Event> GetActiveEventForAdmin() {
+		List<Event> depts = entityManger.createQuery("Select a From Event a  WHERE a.Enable = :Enable",
+		Event.class).setParameter("Enable",true).getResultList();
+	    return depts;
+	}
+	@Override
+	public List<Event> GetInActiveEventForAdmin() {
+		List<Event> depts = entityManger.createQuery("Select a From Event a  WHERE a.Enable = :Enable",
+		Event.class).setParameter("Enable",false).getResultList();
+		return depts;
+	}
+	
 	}
 	
 

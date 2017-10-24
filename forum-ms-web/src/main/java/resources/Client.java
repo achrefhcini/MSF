@@ -1,5 +1,6 @@
 package resources;
 
+import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -19,7 +20,7 @@ import persistance.User;
 @Path("/user")
 @RequestScoped
 public class Client {
-	@Inject
+	@EJB
 	IUserManagerLocal userManager ;
 	
 	@Path("/getUserById/{id}")

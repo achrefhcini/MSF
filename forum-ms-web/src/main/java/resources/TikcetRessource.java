@@ -1,5 +1,6 @@
 package resources;
 
+import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -23,7 +24,7 @@ import persistance.User;
 @Path("/Tikcet")
 @RequestScoped
 public class TikcetRessource {
-	@Inject
+	@EJB
 	ITicketServiceLocal TicketManger;
 	@Path("/addTicket")
 	@POST

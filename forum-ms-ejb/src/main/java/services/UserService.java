@@ -1,18 +1,19 @@
 package services;
 
-import java.util.List;
+
+
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import iservices.IUserManagerLocal;
-import persistance.Event;
+import iservices.IUserMangerRemote;
+
 import persistance.User;
 
 @Stateless
-
-public class UserService implements IUserManagerLocal
+public class UserService implements IUserManagerLocal,IUserMangerRemote
 {
 	@PersistenceContext(unitName="forumMS")
 	EntityManager entityManaer;

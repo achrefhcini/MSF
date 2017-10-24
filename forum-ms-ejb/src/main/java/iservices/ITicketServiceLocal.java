@@ -14,7 +14,13 @@ public interface ITicketServiceLocal {
 
 	boolean DelteTicket(Ticket event);
 
-	Ticket GetTicketById(int idTicket);
+	Ticket GetTicketById(Integer idTicket);
 	
 	List<Ticket>GetAllTicket();
+	
+	Long GetNBplacesReserved(Integer idevent);
+	
+	Integer GetNBplaces(Integer idevent);
+	
+	boolean VerifTicket(Integer idevent,Integer iduser);
 }
