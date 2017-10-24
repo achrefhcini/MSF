@@ -22,7 +22,7 @@ public class SubSection implements Serializable {
 
 	   
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer idSubSection;
 	
 	@ManyToOne

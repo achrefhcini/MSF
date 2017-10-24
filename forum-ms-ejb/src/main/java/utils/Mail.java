@@ -21,7 +21,7 @@ public class Mail {
 	@Resource(name = "java:jboss/mail/Gmail")
     private Session session;
  
-    public void send(String addresses, String topic, String textMessage,String path) {
+    public void send(String addresses, String topic,String htmlContent, String textMessage,String path) {
  
         try {
  
@@ -33,7 +33,6 @@ public class Mail {
             MimeBodyPart textPart = new MimeBodyPart();
             textPart.setText(textMessage);
             MimeBodyPart htmlPart = new MimeBodyPart();
-            String htmlContent = Utils.getValidationEmail(path);
             htmlPart.setContent(htmlContent, "text/html");
             multipart.addBodyPart(textPart);
             multipart.addBodyPart(htmlPart);

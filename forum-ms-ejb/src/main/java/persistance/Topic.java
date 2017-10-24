@@ -22,7 +22,7 @@ public class Topic implements Serializable {
 
 	   
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer idTopic;
 	
 	@ManyToOne

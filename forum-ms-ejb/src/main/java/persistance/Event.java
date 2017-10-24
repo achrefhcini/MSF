@@ -22,7 +22,7 @@ public class Event implements Serializable {
 
 	   
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer idEvent;
 	
 	@ManyToOne

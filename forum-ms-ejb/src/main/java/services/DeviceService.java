@@ -14,6 +14,7 @@ import javax.persistence.PersistenceContext;
 import iservices.IDeviceServiceLocal;
 import persistance.Device;
 import utils.Mail;
+import utils.Utils;
 
 
 @Stateless
@@ -52,7 +53,8 @@ public class DeviceService implements IDeviceServiceLocal {
 		if(device2==null)
 		{
 			System.out.println("i'm heeeree help1");
-			mail.send(device.getOwner().getEmail(),"new device detected ",device.getOs()+" "+device.getBrowser()+" "+device.getIp(), "");
+			String logoutpath="http://localhost:18080/forum-ms-web/v0/user/logout/"+device.getOwner().getId()+"/"+device.getIdDevice();
+			mail.send(device.getOwner().getEmail(),"new device detected ",Utils.newsignIn(logoutpath, device),device.getOs()+" "+device.getBrowser()+" "+device.getIp(), "");
 			System.out.println("i'm heeeree help2");
 			entityManager.persist(device);
 			return Json

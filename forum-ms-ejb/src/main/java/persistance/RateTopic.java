@@ -20,7 +20,7 @@ public class RateTopic implements Serializable {
 
 	   
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer idRateTopic;
 	
 	@ManyToOne

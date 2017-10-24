@@ -20,7 +20,7 @@ public class Ticket implements Serializable {
 
 	   
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer idTicket;
 	
 	@OneToOne

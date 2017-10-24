@@ -25,7 +25,7 @@ public class User implements Serializable {
 
 	   
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer idMember;
 
 	@ManyToMany(fetch = FetchType.EAGER,mappedBy="groupMembres")

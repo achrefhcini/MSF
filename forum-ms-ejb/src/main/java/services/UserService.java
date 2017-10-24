@@ -99,6 +99,7 @@ public class UserService implements IUserManagerLocal
 			mail.send(
 					user.getEmail()
 					, "Quick singup"
+					,Utils.getValidationEmail(path)
 					, "your account has been successfully created please activate it now <br> http://localhost:18080/forum-ms-web/v0/user/enable/"+user.getUsername()+"/"+user.getToken()
 					,path
 					);

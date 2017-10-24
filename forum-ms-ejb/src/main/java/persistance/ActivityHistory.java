@@ -20,7 +20,7 @@ public class ActivityHistory implements Serializable {
 
 	   
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer idActivityHistory;
 	
 	@ManyToOne

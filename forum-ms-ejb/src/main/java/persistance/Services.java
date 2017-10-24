@@ -20,7 +20,7 @@ public class Services implements Serializable {
 
 	   
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer idServices;
 	
 	@ManyToOne

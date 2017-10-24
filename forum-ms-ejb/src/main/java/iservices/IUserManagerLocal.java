@@ -16,7 +16,7 @@ public interface IUserManagerLocal
 	public User getUserByUsername(String username);
 	public User getUserByEmail(String username);
 	public JsonObject quickSignup(User user, Device device);
-	public JsonObject login(String usernameOrEmail,String password,Device device);//ne9sa
+	public JsonObject login(String usernameOrEmail,String password,Device device);
 	public JsonObject logout(int iduser,int idDevice);
 	public JsonObject isConnected(int id);//to test
 	public JsonObject isConnected(String usernameOrEmail);//to test

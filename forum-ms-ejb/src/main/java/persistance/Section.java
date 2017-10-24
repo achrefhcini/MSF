@@ -22,7 +22,7 @@ public class Section implements Serializable {
 
 	   
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer idSection;
 	
 	@ManyToOne
