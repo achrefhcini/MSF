@@ -3,6 +3,7 @@ package resources;
 import java.util.List;
 import java.util.Set;
 
+import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -28,7 +29,7 @@ import util.TimerSessionBeanRemote;
 @Path("/topic")
 @RequestScoped
 public class topicClient {
-	@Inject
+	@EJB
 	ITopicManagerLocal topicManager ;
 	@Inject
 	IUserManagerLocal userManager ;
@@ -52,7 +53,6 @@ public class topicClient {
 			{
 				value = false;
 			}
-			
 		}
 		if(value == true)
 		{

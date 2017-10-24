@@ -265,5 +265,10 @@ public class User implements Serializable {
 	public void setGender(UserGender gender) {
 		this.gender = gender;
 	}
+
+	public User(Integer idMember) {
+		super();
+		this.idMember = idMember;
+	}
    
 }

@@ -12,6 +12,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import iservices.ITopicManagerLocal;
+import iservices.ITopicManagerRemote;
 import persistance.RateTopic;
 import persistance.Topic;
 import persistance.User;
@@ -20,7 +21,7 @@ import util.TimerSessionBeanRemote;
 
 
 @Stateless
-public class TopicService implements ITopicManagerLocal {
+public class TopicService implements ITopicManagerLocal,ITopicManagerRemote {
 	@PersistenceContext(unitName="forumMS")
 	EntityManager entityManager;
 	
@@ -72,9 +73,16 @@ public class TopicService implements ITopicManagerLocal {
 				 return false;
 			 }else
 			 {
+				 if(topic.getReactions()== null)
+				 {
+					 return false;
+				 }
+				 else
+				 {
 	            entityManager.remove(topic); 
 	            entityManager.flush();
 	            return true;
+				 }
 			 }
 		}
            catch(Exception e){
