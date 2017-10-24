@@ -1,6 +1,6 @@
 package services;
 
-import iservices.ISubSection;
+import iservices.ISubSectionLocal;
 
 import java.util.Date;
 import java.util.List;
@@ -18,9 +18,9 @@ import persistance.UserRole;
  * Session Bean implementation class SubSectionBusiness
  */
 @Stateless
-@Local(ISubSection.class)
+@Local(ISubSectionLocal.class)
 @LocalBean
-public class SubSectionBusiness implements ISubSection {
+public class SubSectionBusiness implements ISubSectionLocal {
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -33,7 +33,7 @@ public class SubSectionBusiness implements ISubSection {
     }
 
 	/**
-     * @see ISubSection#getAllSubSectionsOfSection(int)
+     * @see ISubSectionLocal#getAllSubSectionsOfSection(int)
      */
     public List<SubSection> getAllSubSectionsOfSection(int sectionID) {
     	try {
@@ -48,7 +48,7 @@ public class SubSectionBusiness implements ISubSection {
     }
 
 	/**
-     * @see ISubSection#addSubSecion(SubSection)
+     * @see ISubSectionLocal#addSubSecion(SubSection)
      */
     public boolean addSubSecion(SubSection subSection) {
     	try {
@@ -72,7 +72,7 @@ public class SubSectionBusiness implements ISubSection {
     }
 
 	/**
-     * @see ISubSection#deleteSubSection(int)
+     * @see ISubSectionLocal#deleteSubSection(int)
      */
     public boolean deleteSubSection(int subSectionID) {
         try {
@@ -85,14 +85,14 @@ public class SubSectionBusiness implements ISubSection {
     }
 
 	/**
-     * @see ISubSection#getSubSectionByID(int)
+     * @see ISubSectionLocal#getSubSectionByID(int)
      */
     public SubSection getSubSectionByID(int id) {
     	return entityManager.find(SubSection.class, id);
     }
 
 	/**
-     * @see ISubSection#editSubSection(SubSection)
+     * @see ISubSectionLocal#editSubSection(SubSection)
      */
     public boolean editSubSection(SubSection subSection) {
     	try {
@@ -109,7 +109,7 @@ public class SubSectionBusiness implements ISubSection {
     }
 
 	/**
-     * @see ISubSection#setSubSectionVisibility(int)
+     * @see ISubSectionLocal#setSubSectionVisibility(int)
      */
     public boolean setSubSectionVisibility(int subSectionID) {
     	try {
