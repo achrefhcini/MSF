@@ -3,19 +3,21 @@ package persistance;
 import java.io.Serializable;
 import java.lang.Integer;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 
 /**
  * Entity implementation class for Entity: User
  *
  */
-
+@JsonIdentityInfo(
+		  generator = ObjectIdGenerators.PropertyGenerator.class, 
+		  property = "idMember")
 @Entity
 @Table(name="fms_member")
 public class User implements Serializable {
@@ -24,43 +26,30 @@ public class User implements Serializable {
 	@Id
 	@GeneratedValue
 	private Integer idMember;
-	@JsonIgnore
 	@ManyToMany(fetch = FetchType.EAGER,mappedBy="groupMembres")
 	private Set<Group> groupsAsMembre;
-	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Group> groupsAsCreator;
-	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Section> sectionsAsCreator;
-	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Topic> topicsAsCreator;
-	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<SubSection> subSectionsAsCreator;
-	@JsonIgnore
 	@ManyToMany(fetch = FetchType.EAGER,mappedBy="moderators")
 	private Set<SubSection> subSectionsAsModerator;
-	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Services> servicesAsCreator;
-	@JsonIgnore
 	@OneToOne(fetch = FetchType.EAGER,mappedBy="administrator")
 	private Section sectionAsAdministrator;
-	@JsonIgnore
 	@OneToOne(fetch = FetchType.EAGER,mappedBy="participant")
 	private Ticket ticket;
-	@JsonIgnore
 	@OneToOne(fetch = FetchType.EAGER,mappedBy="administrator")
 	private SubSection subSectionAsAdministrator;
-	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="owner")
 	private Set<ActivityHistory> myHistories;
-	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Event> myEvents;
-	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="reactedUser")
 	private Set<RateTopic> myReactions;
 	

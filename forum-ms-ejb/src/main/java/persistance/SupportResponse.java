@@ -20,6 +20,8 @@ import util.ResponseTypeContent;
 @Entity
 @Table(name = "fms_support_response")
 public class SupportResponse implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;

@@ -2,16 +2,12 @@ package persistance;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import data.DataTest;
 import util.StateTicket;
 import util.TypeTicket;
 

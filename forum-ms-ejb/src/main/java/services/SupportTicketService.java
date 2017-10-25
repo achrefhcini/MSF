@@ -12,6 +12,9 @@ import javax.persistence.Query;
 import iservices.ISupportTicketLocal;
 import iservices.ISupportTicketRemote;
 import persistance.SupportTicket;
+import util.ResponseError;
+import util.ResponseSuccess;
+import util.ResponseTmp;
 import util.StateTicket;
 import util.SupportUtil;
 
@@ -21,16 +24,16 @@ public class SupportTicketService implements ISupportTicketLocal,ISupportTicketR
 	@PersistenceContext(unitName="forumMS")
 	EntityManager entityManaer;
 	@Override
-	public boolean addTicketSupport(SupportTicket sp) {
+	public ResponseTmp addTicketSupport(SupportTicket sp) {
 		try
 		{
 			sp.setCreationDate(new Date());
 			entityManaer.persist(sp);
-			return true;
+			return ResponseSuccess.ADDED;
 		}
 		catch(Exception e)
 		{
-			return false;
+			return ResponseError.UPDATED;
 		}
 	}
 	
@@ -43,14 +46,14 @@ public class SupportTicketService implements ISupportTicketLocal,ISupportTicketR
 	
 	
 	@Override
-	public boolean updateSupportTicket(SupportTicket st) {
+	public ResponseTmp updateSupportTicket(SupportTicket st) {
 		// TODO Auto-generated method stub
 		try {
 			st.setUpdateDate(new Date());
 			entityManaer.merge(st);
-			return true;
+			return ResponseSuccess.UPDATED;
 		} catch (Exception e) {
-			return false;
+			return ResponseError.UPDATED;
 		}
 		
 		
@@ -58,17 +61,28 @@ public class SupportTicketService implements ISupportTicketLocal,ISupportTicketR
 	@Override
 	public SupportTicket findSupportTicketById(int id) {
 		// TODO Auto-generated method stub
-		return entityManaer.find(SupportTicket.class, id);
+		try {
+			return entityManaer.find(SupportTicket.class, id);
+
+		} catch (Exception e) {
+            return null; 		
+  
+		}
 	}
 	@Override
 	public SupportTicket findSupportTicketByTicketNumber(String tNumber) {
-		
-		
+		SupportTicket sp=null;
+		try {
 		 Query query= entityManaer.createQuery("SELECT s FROM SupportTicket s WHERE "
 			 		+ "s.ticketNumber =:tNumber ",SupportTicket.class);
 			 query.setParameter("tNumber", tNumber);
 		
-		return (SupportTicket) query.getSingleResult();
+			 sp= (SupportTicket) query.getSingleResult();
+		} catch (Exception e) {
+			sp=null;		
+  
+		}
+		return sp;
 	}
 	@Override
 	public List<SupportTicket> getSupportTicketsFromTo(int fromId, int toId) {
@@ -82,16 +96,16 @@ public class SupportTicketService implements ISupportTicketLocal,ISupportTicketR
 
 	}
 	@Override
-	public boolean changeState(SupportTicket st, int state) {
+	public ResponseTmp changeState(SupportTicket st, int state) {
 		// TODO Auto-generated method stub
 		try {
 			st.setUpdateDate(new Date());
 			st.setState(SupportUtil.checkStatTicket(st, state));
 			entityManaer.merge(st);
-			return true;
+			return ResponseSuccess.UPDATED;
 		} catch (Exception e) {
 			// TODO: handle exception
-			return false;
+			return ResponseError.UPDATED;
 		}
 		
 		

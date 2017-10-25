@@ -28,6 +28,8 @@ import data.DataTest;
 import iservices.ISupportTicketLocal;
 import persistance.SupportTicket;
 import persistance.User;
+import util.ResponseError;
+import util.ResponseSuccess;
 import util.ResponseTmp;
 import util.SupportUtil;
 import util.TypeTicket;
@@ -48,6 +50,7 @@ public class Support {
 		JSONObject json = new JSONObject();
 		JSONArray array = new JSONArray();
 		json.put("userConnected", DataTest.user1.getUsername());
+		json.put("Api", "Support");
 		json.put("userAgent",userAgent);
 		array.put(json);
 		
@@ -65,12 +68,9 @@ public class Support {
 			@QueryParam("subject") String subject,
 			@QueryParam("category") String category,
 			@QueryParam("universe") String universe,
-			@QueryParam("typeTicket") TypeTicket typeTicket,
-			@QueryParam("fields") String fields
+			@QueryParam("typeTicket") TypeTicket typeTicket
 			)
 	{
-	
-			
 		
 		SupportTicket supportTicket = new SupportTicket();
 		supportTicket.setSubject(subject);
@@ -79,9 +79,14 @@ public class Support {
 		supportTicket.setTypeTicket(typeTicket);
 		supportTicket.setTicketNumber(SupportUtil.getTicketNumberRandom()+"");;
 		supportTicket.setConcernedUser(DataTest.user1);	
+    
+		if((subject!=null)&&(category!=null)&&(universe!=null)&&(typeTicket!=null)){
+			return Response.ok(supportManager.addTicketSupport(supportTicket)).build();
+		}
+		else 
+			return Response.status(Status.BAD_REQUEST).entity(ResponseError.NO_FIELDS).build();
 
 		
-		return Response.ok(supportManager.addTicketSupport(supportTicket)).build();
 		
 	}
 	
@@ -89,10 +94,16 @@ public class Support {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response ListSupportTicket(){
-	
-		System.out.println(supportManager.getSupportTickets());
+	     
+		if(!supportManager.getSupportTickets().isEmpty()){
+			return Response.ok(supportManager.getSupportTickets()).build();
+
+		}
+		else  {
+			return Response.status(Status.NO_CONTENT).entity(ResponseError.NO_DATA).build();
+
+		}
 		
-		return Response.ok(supportManager.getSupportTickets()).build();
 	
 		
 	}
@@ -102,26 +113,20 @@ public class Support {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getTicketsById(@PathParam("idTicket") String idTicket){
 	
-	
-		
-		return Response.ok(supportManager.findSupportTicketByTicketNumber(idTicket)).build();
+	     if(supportManager.findSupportTicketByTicketNumber(idTicket)!=null){
+	 		return Response.ok(supportManager.findSupportTicketByTicketNumber(idTicket)).build();
+ 
+	     }
+	     else if(supportManager.findSupportTicketByTicketNumber(idTicket)==null){
+	    	 return Response.status(Status.NO_CONTENT).entity(ResponseError.NO_DATA).build();
+	     }
+	     else 
+	    	 return Response.status(Status.BAD_REQUEST).entity(ResponseError.NO_TARGET).build();
 	
 		
 	}
 	
-	@Path("/tickets")
-	@PUT
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response updateSupportId(@QueryParam("idTicket") int idTicket,@QueryParam("numberT") String numberT
-			){
-		    
-		
-		SupportTicket st=supportManager.findSupportTicketById(idTicket);
-		st.setTicketNumber(numberT);
-		return Response.ok(supportManager.updateSupportTicket(st)).build(); 
-		
-	}
-	
+
 
 	@Path("/tickets/{orderBy}/{target}")
 	@GET
@@ -132,20 +137,17 @@ public class Support {
 		
 	if((order.toString().toUpperCase().equals("ASC"))||
 			(order.toString().toUpperCase().equals("DESC"))){
-		System.out.println("------"+order);
 		try {
 			List<SupportTicket> ls=supportManager.getSupportTickedOrderAD(order,orderBy);
 			return Response.ok(ls).build();
 		} catch (Exception e) {
-			ResponseTmp rp=new ResponseTmp("could not resolve property for this request","SqlException",275);
-		    return Response.status(416).entity(rp).build();
+		    return Response.status(Status.NOT_ACCEPTABLE).entity(ResponseError.SQL_EXCEPTION).build();
 		}
 	
 		
 	}
 	else {
-		ResponseTmp rp=new ResponseTmp("Cannot determine the target object for this request","OAuthException",275);
-	    return Response.status(416).entity(rp).build();
+	    return Response.status(Status.NOT_FOUND).entity(ResponseError.NO_TARGET).build();
 	}
 		
 	}
@@ -169,24 +171,51 @@ public class Support {
 		
 			ResponseTmp errorMessage=new ResponseTmp("Error","",401);
 			return Response.status(Status.NOT_ACCEPTABLE)
-    				.entity(errorMessage)
-    				.type(MediaType.APPLICATION_JSON).
+    				.entity(errorMessage).
     				build();
 		}
+		
+	}
+	
+	@Path("/tickets/s/")
+	@PUT
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response ChangeStateTicketSupport(@QueryParam("idTicket") String idTicket,
+			@QueryParam("state") int state){
+		
+            
+             	SupportTicket st=supportManager.findSupportTicketByTicketNumber((idTicket));
+    			return Response.ok(supportManager.changeState(st, state)).build();
+    	
+           
 		
 	}
 	
 	@Path("/tickets")
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response ChangeStateTicketSupport(@QueryParam("idTicket") int idTicket,
-			@QueryParam("state") int state){
+	public Response updateSupportId(@QueryParam("idTicket") String idTicket,
+			@QueryParam("subject") String subject,
+			@QueryParam("category") String category,
+			@QueryParam("universe") String universe,
+			@QueryParam("typeTicket") TypeTicket typeTicket
+			){
+		    
+		if(subject!=null){
+			
 	
-		SupportTicket st=supportManager.findSupportTicketById(idTicket);
-		System.out.println(st.toString());
-		return Response.ok(supportManager.changeState(st, state)).build();
-		
+		SupportTicket st=supportManager.findSupportTicketByTicketNumber(idTicket);
+		st.setCategory(category);  
+		st.setUniverse(universe);
+		st.setTypeTicket(typeTicket);
+		st.setSubject(subject);
+		return Response.ok(supportManager.updateSupportTicket(st)).build(); 
+		} 
+		else {
+			return Response.status(Status.BAD_REQUEST).entity(ResponseError.NO_TARGET).build();
+		}
 	}
+	
 	
 	
 	
