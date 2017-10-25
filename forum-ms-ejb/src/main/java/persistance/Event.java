@@ -4,9 +4,15 @@ import java.io.Serializable;
 
 import java.lang.Integer;
 import java.util.Date;
-
+import java.util.Set;
 
 import javax.persistence.*;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 /**
  * Entity implementation class for Entity: Event
@@ -14,6 +20,9 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="fms_event")
+@JsonIdentityInfo(
+		  generator = ObjectIdGenerators.PropertyGenerator.class, 
+		  property = "idEvent")
 public class Event implements Serializable {
 
 	   
@@ -25,7 +34,8 @@ public class Event implements Serializable {
 	@JoinColumn(name="creator",referencedColumnName="idMember")
 	private User creator;
 	
-	/*@OneToMany(fetch = FetchType.EAGER,mappedBy="event")
+	/*@JsonIgnore
+	@OneToMany(fetch = FetchType.EAGER,mappedBy="event")
 	private Set<Ticket> listTicket;*/
 	
 	private boolean Enable;
@@ -60,8 +70,8 @@ public class Event implements Serializable {
 		return listTicket;
 	}
 	public void setListTicket(Set<Ticket> listTicket) {
-		this.listTicket = listTicket;*/
-	//}
+		this.listTicket = listTicket;
+	}*/
 	public boolean isEnable() {
 		return Enable;
 	}

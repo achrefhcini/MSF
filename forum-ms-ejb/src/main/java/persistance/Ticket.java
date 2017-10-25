@@ -4,12 +4,20 @@ import java.io.Serializable;
 import java.lang.Integer;
 import javax.persistence.*;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 /**
  * Entity implementation class for Entity: Ticket
  *
  */
 @Entity
 @Table(name="fms_ticket")
+@JsonIdentityInfo(
+		  generator = ObjectIdGenerators.IntSequenceGenerator.class, 
+		  property = "idTicket")
 public class Ticket implements Serializable {
 
 	   
@@ -20,6 +28,7 @@ public class Ticket implements Serializable {
 	@OneToOne
 	@JoinColumn(name="participant",referencedColumnName="idMember")
 	private User participant;
+	
 	
 	@ManyToOne
 	@JoinColumn(name="event",referencedColumnName="idEvent")

@@ -1,13 +1,20 @@
 package util;
+import java.io.File;
 import java.util.Properties;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 public class Mail 
 
 {
@@ -30,10 +37,23 @@ public class Mail
 		generateMailMessage = new MimeMessage(getMailSession);
 		generateMailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 		generateMailMessage.addRecipient(Message.RecipientType.CC, new InternetAddress("wassim9994@gmail.com"));
-		generateMailMessage.setSubject("New Event Created In Multi-Service Forum");
-		String emailBody = "<h1>Here is th link check it ! ! </h1>" 
-							+ "<img src=\"C:/Users/ASUS/Desktop/event.png\">";
-		generateMailMessage.setContent(emailBody, "text/html");
+		generateMailMessage.setSubject("Multi-Service Forum  Events");
+		String emailBody = "<h1>New Event Created In Multi-Service Forum check it out</h1><img src=\"cid:my-image\">"; 
+		////
+		  Multipart multipart = new MimeMultipart("related");
+
+          MimeBodyPart htmlPart = new MimeBodyPart();
+          htmlPart.setContent(emailBody, "text/html");
+          multipart.addBodyPart(htmlPart);
+
+          MimeBodyPart imagePart = new MimeBodyPart();
+          DataSource ds = new FileDataSource(new File("C:\\Users\\ASUS\\Desktop\\event.png"));
+          imagePart.setDataHandler(new DataHandler(ds));
+          imagePart.setHeader("Content-ID", "<my-image>");
+          multipart.addBodyPart(imagePart);
+		
+		////
+		generateMailMessage.setContent(multipart, "text/html");
 		System.out.println("Mail Session has been created successfully..");
  
 		// Step3

@@ -3,7 +3,6 @@ package resources;
 import java.util.Date;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
@@ -15,14 +14,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.container.ResourceContext;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import iservices.IEventServiceLocal;
 import persistance.Event;
 import persistance.User;
@@ -38,7 +34,7 @@ public class EventRessource {
 	 /*@Context 
 	 ResourceContext resourceContext;
 	 UploadFilesService b = resourceContext.getResource(UploadFilesService.class);*/
-	
+	//XXX********************ADD METHOD 1*********************XXX
 	@Path("/addEvent")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -76,7 +72,7 @@ public class EventRessource {
 	}
 	
 	   //Get All Events
-	
+	  //XXX********************GET ALL EVENTS*********************XXX
 	   @Path("/getAllEvents")
 	   @GET
 	   @Produces(MediaType.APPLICATION_JSON)
@@ -86,7 +82,7 @@ public class EventRessource {
 	   }
 	   
 	   //GetEventByID
-	   
+	   //XXX********************GET Event By Id*********************XXX
 	    @Path("/getEventById/{id}")
 		@GET
 		@Produces(MediaType.APPLICATION_JSON)
@@ -105,7 +101,7 @@ public class EventRessource {
 			return Response.status(Status.NO_CONTENT).build();
 		}
 	    
-	    //Update event with given id
+	    //XXX********************UPDATE EVENT*********************XXX
 	    @Path(value="/UpdateEvent/{id}") 
 	    @PUT
 	    @Consumes(MediaType.APPLICATION_JSON)
@@ -119,20 +115,22 @@ public class EventRessource {
 	 	  return Response.status(Status.NOT_FOUND).build();
 	    }
 	    
-	    //Delelte Event with given ID
-	    @Path("/DeleteEvent/{id}") 
-	    @DELETE  
+	    //XXX********************DELETE EVENT*********************XXX
+	    @Path(value="/DeleteEvent/{id}") 
+	    @DELETE
+	    @Produces(MediaType.APPLICATION_JSON)
 	    public Response DeleteEventById(@PathParam(value="id")int id)
 	    {
 	    	Event e=new Event();
 	    	e.setIdEvent(id);
 	 	  if(eventManger.DelteEvent(e))
-	 	   return Response.ok().build();
+	 		 return Response.ok(eventManger.DelteEvent(e)).build();
 	 	  
-	 	  return Response.status(404).build();
+	 	  //return Response.status(404).build();
+	 	 return Response.ok(eventManger.DelteEvent(e)).build();
 	    }
 	  	    
-	    //ADD Evnet with JSON METHOD
+	  //XXX********************Add Event Json*********************XXX
 	    @POST
 	    @Consumes(MediaType.APPLICATION_JSON)
 	    @Path(value="AddEventJson")        
@@ -143,7 +141,7 @@ public class EventRessource {
 	 	  return Response.status(404).build();
 	    }
 	    
-	    //SEARCH EVENT BY NAME
+	    //XXX********************GET EVENTS BY NAME*********************XXX
 	       @Path("/GetEventsByName/{title}") 
 		   @GET
 		   @Produces(MediaType.APPLICATION_JSON)	    
@@ -152,7 +150,7 @@ public class EventRessource {
 			   return Response.status(200).entity(eventManger.GetEventsByTitle(title)).build();
 		   }
 	       
-	      //SEARCH EVENTS THAT BELONG TO A GIVEN USER 
+	       //XXX********************Get Events By User*********************XXX
 	       @Path("/GetEventsByUser/{iduser}") 
 		   @GET
 		   @Produces(MediaType.APPLICATION_JSON)	    
@@ -161,7 +159,7 @@ public class EventRessource {
 			   return Response.status(200).entity(eventManger.GetEventsByUser(iduser)).build();
 		   }
 	       
-	       //SEARCH TODAY EVENTS
+	     //XXX********************SEARCH TODAY EVENTS*********************XXX
 	       @Path("/getTodayEvents")
 		   @GET
 		   @Produces(MediaType.APPLICATION_JSON)	    
@@ -169,8 +167,8 @@ public class EventRessource {
 		   {
 			   return Response.status(200).entity(eventManger.GetTodayEvents()).build();
 		   }
-	       //SEARCH EVENTS BEETWEEN TWO GIVEN DATES
-	       
+	      
+	       //XXX********************SEARCH EVENTS BEETWEEN TWO GIVEN DATES*********************XXX
 	       @Path("/GetEventsBetweenDates")
 		   @POST
 		   @Produces(MediaType.APPLICATION_JSON)
@@ -182,7 +180,7 @@ public class EventRessource {
 	    	   return Response.status(200).entity(eventManger.GetEvensBetweenDates(date1, date2)).build();
 	       }
 	       
-	       //User list that joined event
+	       //XXX********************Get All Users Joind Event*********************XXX
 	       @Path("/GetAllUsersJoindEvent/{idevent}") 
 		   @GET
 		   @Produces(MediaType.APPLICATION_JSON)	    
@@ -191,7 +189,8 @@ public class EventRessource {
 			   return Response.status(200).entity(eventManger.GetAllUsersJoindEvent(idevent)).build();
 		   }
 	       
-	       //Get All Events joined by given user
+	      
+	      //XXX********************Get All Events joined by given user*********************XXX
 	       @Path("/GetEventJoinedByGivenUser/{iduser}") 
 		   @GET
 		   @Produces(MediaType.APPLICATION_JSON)	    
@@ -200,7 +199,8 @@ public class EventRessource {
 			   return Response.status(200).entity(eventManger.GetEventJoinedByGivenUser(idUser)).build();
 		   }
 	       
-	       //get all events of the current week
+	      
+		  //XXX********************get all events of the current week*********************XXX
 	       @Path("/ListOfEventThisWeek") 
 		   @GET
 		   @Produces(MediaType.APPLICATION_JSON)	    
@@ -209,7 +209,8 @@ public class EventRessource {
 			   return Response.status(200).entity(eventManger.ListOfEventThisWeek()).build();
 		   }
 	       
-	       //get event staut(finished/started/in progress)
+	       
+		//XXX********************get event staut(finished/started/in progress)*********************XXX
 	       @Path("/GetEtatEvent/{idevent}") 
 		   @GET
 		   @Produces(MediaType.TEXT_HTML)	    
@@ -234,7 +235,8 @@ public class EventRessource {
 	           return Response.ok(jsonFile).build();
 	       }
 	       
-	       //Get Events for ajax search
+	      
+			//XXX********************Get Events for ajax search*********************XXX
 	       @Path("/GetEventsForAjax/{crit}") 
 		   @GET
 		   @Produces(MediaType.APPLICATION_JSON)	    
@@ -244,7 +246,7 @@ public class EventRessource {
 		   }
 	       
 	       
-	       //enable or disbale event by admin
+		//XXX********************UpdateEventAdmin*********************XXX
 	       @Path(value="/UpdateEventAdmin/{id}") 
 		   @PUT
 		   @Consumes(MediaType.APPLICATION_JSON)
@@ -258,7 +260,7 @@ public class EventRessource {
 		 	  return Response.status(Status.NOT_FOUND).build();
 		    }
 	       
-	       //get all enabled events for admin
+		//XXX********************GetActiveEventForAdmin*********************XXX
 	       @Path("/GetActiveEventForAdmin") 
 		   @GET
 		   @Produces(MediaType.APPLICATION_JSON)	    
@@ -267,7 +269,7 @@ public class EventRessource {
 			   return Response.status(200).entity(eventManger.GetActiveEventForAdmin()).build();
 		   }
 	       
-	       ////get all disabled events for admin
+			//XXX********************GetInActiveEventForAdmin*********************XXX
 	       @Path("/GetInActiveEventForAdmin") 
 		   @GET
 		   @Produces(MediaType.APPLICATION_JSON)	    

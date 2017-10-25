@@ -46,6 +46,6 @@ public interface IEventServiceLocal {
 	
 	List<Event>GetInActiveEventForAdmin();
 
-	
+	boolean CountEventsBeforeDelete(Integer idevent);
 	
 }

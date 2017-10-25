@@ -7,7 +7,11 @@ import java.util.Set;
 
 import javax.persistence.*;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.codehaus.jackson.annotate.JsonIgnore;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 
 
 /**
@@ -16,34 +20,41 @@ import jdk.nashorn.internal.ir.annotations.Ignore;
  */
 @Entity
 @Table(name="fms_member")
-
+@JsonIdentityInfo(
+		  generator = ObjectIdGenerators.PropertyGenerator.class, 
+		  property = "idMember")
 public class User implements Serializable {
 
 	   
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer idMember;
 	
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.EAGER,mappedBy="groupMembres")
 	private Set<Group> groupsAsMembre;
 	
-	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Group> groupsAsCreator;
 	
-	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Section> sectionsAsCreator;
 	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Topic> topicsAsCreator;
 	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<SubSection> subSectionsAsCreator;
 	
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.EAGER,mappedBy="moderators")
 	private Set<SubSection> subSectionsAsModerator;
 	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Services> servicesAsCreator;
 	
@@ -51,16 +62,16 @@ public class User implements Serializable {
 	private Section sectionAsAdministrator;
 	
 	/*@OneToOne(fetch = FetchType.EAGER,mappedBy="participant")
-	private Ticket ticket;*/
-	
+	private Ticket ticket;
+	*/
 	@OneToOne(fetch = FetchType.EAGER,mappedBy="administrator")
 	private SubSection subSectionAsAdministrator;
 	
 	@OneToMany(fetch = FetchType.EAGER,mappedBy="owner")
 	private Set<ActivityHistory> myHistories;
 	
-	
-	/*@OneToMany(fetch = FetchType.LAZY,mappedBy="creator")
+	/*@JsonIgnore
+	@OneToMany(fetch = FetchType.EAGER,mappedBy="creator")
 	private Set<Event> myEvents;*/
 	
 	
@@ -166,8 +177,8 @@ public class User implements Serializable {
 		return ticket;
 	}
 	public void setTicket(Ticket ticket) {
-		this.ticket = ticket;*/
-	//}
+		this.ticket = ticket;
+	}*/
 	public SubSection getSubSectionAsAdministrator() {
 		return subSectionAsAdministrator;
 	}
@@ -269,5 +280,14 @@ public class User implements Serializable {
 		super();
 		this.idMember = idMember;
 	}
+
+	@Override
+	public String toString() {
+		   return getClass().getSimpleName() +"[idMember=" + idMember + ", email=" + email + ", username=" + username + ", password=" + password
+				+ ", role=" + role + ", isEnabled=" + isEnabled + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", birthDate=" + birthDate + ", creationDate=" + creationDate + ", image=" + image + ", phoneNumber="
+				+ phoneNumber + ", gender=" + gender + "]";
+	}
+	
    
 }

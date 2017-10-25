@@ -23,4 +23,7 @@ public interface ITicketServiceLocal {
 	Integer GetNBplaces(Integer idevent);
 	
 	boolean VerifTicket(Integer idevent,Integer iduser);
+	
+	
+	
 }

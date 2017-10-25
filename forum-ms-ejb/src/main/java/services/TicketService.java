@@ -54,7 +54,7 @@ public class TicketService implements ITicketServiceLocal{
 	public boolean DelteTicket(Ticket event) {
 		try
 		{
-	   
+	    
 		entityManger.remove(entityManger.merge(event));
 		return true;
 		}catch(Exception e)
@@ -107,5 +107,7 @@ public class TicketService implements ITicketServiceLocal{
 		
 		
 	}
+
+	
 
 }
