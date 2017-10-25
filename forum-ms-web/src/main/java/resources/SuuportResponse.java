@@ -2,6 +2,7 @@ package resources;
 
 import java.net.URI;
 
+import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -22,10 +23,10 @@ import util.ResponseTypeContent;
 @RequestScoped
 @Path("/responses")
 public class SuuportResponse {
-	@Inject
+	@EJB
 	ISupportTicketLocal supportManager;
 	
-	@Inject 
+	@EJB 
 	ISupportResponse responseManager;
 	
 	@POST

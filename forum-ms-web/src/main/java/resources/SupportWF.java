@@ -1,8 +1,10 @@
 package resources;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -30,10 +32,10 @@ import util.TypeTicket;
 @Path("/me/workfollows")
 @RequestScoped
 public class SupportWF {
-	@Inject
+	@EJB
 	ISupportTicketLocal supportManager;
 	
-	@Inject
+	@EJB
 	ISupportWorkFollow workFollowManager;
 	
 	@POST
@@ -74,20 +76,25 @@ public class SupportWF {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getWorkFollowByIdTicket(@PathParam("idTicket") String idTicket){
-		
+		List<SupportWorkFollow> list=null;
+		try {
 		SupportTicket supportTicket=supportManager.findSupportTicketByTicketNumber(idTicket);
-
-		if(workFollowManager.findSupportWorkFollowByTicket(supportTicket).isEmpty()){
-			return Response.ok(workFollowManager.findSupportWorkFollowByTicket(supportTicket)).build();
+            
+		list=
+        		workFollowManager.findSupportWorkFollowByTicket(supportTicket);
+	      
+		if(list==null){
+		    return Response.status(416).entity(ResponseError.NO_DATA).build();
 		}
-		else if(workFollowManager.findSupportWorkFollowByTicket(supportTicket).isEmpty()) {
-			ResponseTmp rp=new ResponseTmp("could not find Data for this request","DataException",290);
-		    return Response.status(416).entity(rp).build();
+			return Response.ok(list).build();
 		}
-		else {
-			ResponseTmp rp=new ResponseTmp("could not resolve this request","MethodException",301);
-		    return Response.status(416).entity(rp).build();
+		catch (Exception e){
+			
+		    return Response.status(416).entity(ResponseError.NO_DATA).build();
 		}
+	    
+	   
+		
 		
 	}
 
@@ -128,19 +135,22 @@ public class SupportWF {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getWorkFollowByIdUser(@PathParam("idUser") String idUser){
 		
-		
+		List<SupportWorkFollow> list=null;
+		try {
+			list=workFollowManager.findSupportWorkFollowByUser(DataTest.user1);
+	      
+		if(list==null){
+		    return Response.status(416).entity(ResponseError.NO_DATA).build();
+		}
+			return Response.ok(list).build();
+		}
+		catch (Exception e){
+			
+		    return Response.status(416).entity(ResponseError.NO_DATA).build();
+		}
+	    
 
-		if(!workFollowManager.findSupportWorkFollowByUser(DataTest.user1).isEmpty()){
-			return Response.ok(workFollowManager.findSupportWorkFollowByUser(DataTest.user1)).build();
-		}
-		else if(workFollowManager.findSupportWorkFollowByUser(DataTest.user1).isEmpty()) {
-			ResponseTmp rp=new ResponseTmp("could not find Data for this request","DataException",290);
-		    return Response.status(416).entity(rp).build();
-		}
-		else {
-			ResponseTmp rp=new ResponseTmp("could not resolve this request","MethodException",301);
-		    return Response.status(416).entity(rp).build();
-		}
+
 		
 	}
 	

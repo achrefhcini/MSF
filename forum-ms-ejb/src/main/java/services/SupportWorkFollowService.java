@@ -22,18 +22,17 @@ import util.StateWorkFollow;
 public class SupportWorkFollowService implements ISupportWorkFollow  {
 	@PersistenceContext(unitName="forumMS")
 	EntityManager entitymanager;
-	public Boolean addSupportWF(SupportWorkFollow sWF) {
+	public ResponseTmp addSupportWF(SupportWorkFollow sWF) {
 		try
 		{
 			sWF.setDateReply(new Date());;
 			sWF.setStateWF(StateWorkFollow.PROCESSING);
-			sWF.setResponseWF(null);
 			entitymanager.persist(sWF);
-			return true;
+			return ResponseSuccess.ADDED;
 		}
 		catch(Exception e)
 		{
-			return false;
+			return ResponseError.ADDED;
 		}
 	}
 	@Override
@@ -46,25 +45,35 @@ public class SupportWorkFollowService implements ISupportWorkFollow  {
 	@Override
 	public List<SupportWorkFollow> findSupportWorkFollowByUser(User user) {
 
-	
+		List<SupportWorkFollow> list=null;
+		 try {
 		Query query=entitymanager.createQuery("SELECT sw FROM SupportWorkFollow sw where"
 					+ " sw.userReply.idMember = :id ",SupportWorkFollow.class);
 			
 		query.setParameter("id", user.getIdMember());
 		System.out.println("--------"+query.getFirstResult());
 		return query.getResultList();
+			} catch (Exception e) {
+				list = null;
+			}
+			 return list;
 	}
 	@Override
 	public List<SupportWorkFollow> findSupportWorkFollowByTicket(SupportTicket st) {
 		// TODO Auto-generated method stub
-	
-			 
-				Query query=entitymanager.createQuery("SELECT sw FROM SupportWorkFollow sw "
+		List<SupportWorkFollow> list;
+			 try {
+					Query query=entitymanager.createQuery("SELECT sw FROM SupportWorkFollow sw "
 					     	+ "join sw.supportTickets sp where"
 							+ " sp.ticketNumber = :number ",SupportWorkFollow.class);
 					
 				query.setParameter("number", st.getTicketNumber());
-				return query.getResultList();
+				list= query.getResultList();
+			} catch (Exception e) {
+				list = null;
+			}
+			 return list;
+			
 	}
 	@Override
 	public ResponseTmp changeStateWF(SupportWorkFollow wf) {
@@ -77,14 +86,14 @@ public class SupportWorkFollowService implements ISupportWorkFollow  {
 				wf1.setSupportTickets(wf.getSupportTickets());
 				wf1.setUserReply(user2);
 				wf.setDateEndReply(new Date());
-				wf.setResponseWF(Boolean.FALSE);
+				wf.setResponseWF(false);
 				this.addSupportWF(wf1);
 		
 			} 
 	
              else if(wf.getStateWF()==StateWorkFollow.RESOLVED){
  				wf.setDateEndReply(new Date());
- 				wf.setResponseWF(Boolean.TRUE);
+ 				wf.setResponseWF(true);
  				
  				
  			}

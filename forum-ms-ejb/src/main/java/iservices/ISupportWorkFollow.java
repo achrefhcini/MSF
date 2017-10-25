@@ -11,7 +11,7 @@ import util.ResponseTmp;
 
 @Local
 public interface ISupportWorkFollow {
-	public Boolean addSupportWF(SupportWorkFollow sWF);
+	public ResponseTmp addSupportWF(SupportWorkFollow sWF);
 	public List<SupportWorkFollow> getSupportWorkFollow();
 	public List<SupportWorkFollow> findSupportWorkFollowByUser(User user);
 	public List<SupportWorkFollow> findSupportWorkFollowByTicket(SupportTicket st);

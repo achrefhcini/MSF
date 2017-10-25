@@ -1,6 +1,7 @@
 package services;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -8,27 +9,44 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.xml.crypto.Data;
 
+import com.ctc.wstx.util.DataUtil;
+
+import data.DataTest;
 import iservices.ISupportTicketLocal;
 import iservices.ISupportTicketRemote;
 import persistance.SupportTicket;
+import persistance.SupportWorkFollow;
 import util.ResponseError;
 import util.ResponseSuccess;
 import util.ResponseTmp;
 import util.StateTicket;
+import util.StateWorkFollow;
 import util.SupportUtil;
 
 @Stateless
 public class SupportTicketService implements ISupportTicketLocal,ISupportTicketRemote {
 	
 	@PersistenceContext(unitName="forumMS")
-	EntityManager entityManaer;
+	EntityManager entityManager;
 	@Override
 	public ResponseTmp addTicketSupport(SupportTicket sp) {
 		try
 		{
 			sp.setCreationDate(new Date());
-			entityManaer.persist(sp);
+			SupportWorkFollow sw=new SupportWorkFollow();
+			sw.setCauseWF("Affected By system T:"+sp.getTicketNumber());
+			Set<SupportTicket> supportTickets=new HashSet();
+			supportTickets.add(sp);
+			sw.setSupportTickets(supportTickets);
+			sw.setUserReply(DataTest.user2);
+			sw.setDateReply(new Date());;
+			sw.setStateWF(StateWorkFollow.PROCESSING);
+			sw.setResponseWF(null);
+			entityManager.persist(sp);
+			entityManager.persist(sw);
+			entityManager.flush();
 			return ResponseSuccess.ADDED;
 		}
 		catch(Exception e)
@@ -41,7 +59,7 @@ public class SupportTicketService implements ISupportTicketLocal,ISupportTicketR
 	@Override
 	public List<SupportTicket> getSupportTickets() {
 		// TODO Auto-generated method stub
-		return entityManaer.createQuery("SELECT s FROM SupportTicket s",SupportTicket.class).getResultList();
+		return entityManager.createQuery("SELECT s FROM SupportTicket s",SupportTicket.class).getResultList();
 	}
 	
 	
@@ -50,7 +68,7 @@ public class SupportTicketService implements ISupportTicketLocal,ISupportTicketR
 		// TODO Auto-generated method stub
 		try {
 			st.setUpdateDate(new Date());
-			entityManaer.merge(st);
+			entityManager.merge(st);
 			return ResponseSuccess.UPDATED;
 		} catch (Exception e) {
 			return ResponseError.UPDATED;
@@ -62,7 +80,7 @@ public class SupportTicketService implements ISupportTicketLocal,ISupportTicketR
 	public SupportTicket findSupportTicketById(int id) {
 		// TODO Auto-generated method stub
 		try {
-			return entityManaer.find(SupportTicket.class, id);
+			return entityManager.find(SupportTicket.class, id);
 
 		} catch (Exception e) {
             return null; 		
@@ -73,7 +91,7 @@ public class SupportTicketService implements ISupportTicketLocal,ISupportTicketR
 	public SupportTicket findSupportTicketByTicketNumber(String tNumber) {
 		SupportTicket sp=null;
 		try {
-		 Query query= entityManaer.createQuery("SELECT s FROM SupportTicket s WHERE "
+		 Query query= entityManager.createQuery("SELECT s FROM SupportTicket s WHERE "
 			 		+ "s.ticketNumber =:tNumber ",SupportTicket.class);
 			 query.setParameter("tNumber", tNumber);
 		
@@ -87,7 +105,7 @@ public class SupportTicketService implements ISupportTicketLocal,ISupportTicketR
 	@Override
 	public List<SupportTicket> getSupportTicketsFromTo(int fromId, int toId) {
 		// TODO Auto-generated method stub
-		 Query query= entityManaer.createQuery("SELECT s FROM SupportTicket s WHERE "
+		 Query query= entityManager.createQuery("SELECT s FROM SupportTicket s WHERE "
 		 		+ "s.IdSupTicket >=:fromid and s.IdSupTicket <=:toid",SupportTicket.class);
 		 query.setParameter("fromid", fromId);
 		 query.setParameter("toid", toId);
@@ -101,7 +119,7 @@ public class SupportTicketService implements ISupportTicketLocal,ISupportTicketR
 		try {
 			st.setUpdateDate(new Date());
 			st.setState(SupportUtil.checkStatTicket(st, state));
-			entityManaer.merge(st);
+			entityManager.merge(st);
 			return ResponseSuccess.UPDATED;
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -113,7 +131,7 @@ public class SupportTicketService implements ISupportTicketLocal,ISupportTicketR
 	@Override
 	public List<SupportTicket> getSupportTickedOrderAD(String order,String orderBy) {
 		// TODO Auto-generated method stub
-		Query query= entityManaer.createQuery("SELECT s FROM SupportTicket s ORDER BY  s."+orderBy+" "+order+"",SupportTicket.class);
+		Query query= entityManager.createQuery("SELECT s FROM SupportTicket s ORDER BY  s."+orderBy+" "+order+"",SupportTicket.class);
 		
 		 return query.getResultList();
 
