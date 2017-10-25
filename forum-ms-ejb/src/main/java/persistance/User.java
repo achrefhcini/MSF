@@ -64,7 +64,7 @@ public class User implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY,mappedBy="userReply")
 	private Set<SupportWorkFollow> replyWorkFollow;
 	*/
-	public User(Integer idMember,String email, String username, String password,UserRole role) {
+	public User(Integer idMember,String email, String username, String password,UserRole role,String phoneNumber) {
 		this.idMember=idMember;
 		this.email = email;
 		this.username = username;
@@ -72,6 +72,7 @@ public class User implements Serializable {
 		this.role = role;
 		this.isEnabled = Boolean.TRUE;
 		this.creationDate = new Date();
+		this.phoneNumber=phoneNumber;
 	}
 	
 	

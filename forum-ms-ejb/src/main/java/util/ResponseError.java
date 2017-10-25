@@ -8,5 +8,6 @@ public class ResponseError {
 	public static final ResponseTmp NOT_TYPE=new ResponseTmp("Type of this request is not correct", "Error", 204 );
     public static final ResponseTmp SQL_EXCEPTION=new ResponseTmp("could not resolve property for this request","SqlException",275);
     public static final ResponseTmp NO_TARGET=new ResponseTmp("Cannot determine the target object for this request","OAuthException",275);
+	public static final  ResponseTmp EXTENSION=new ResponseTmp("You are not allowed to upload this type of file","OAuthException",500);
 
 }
